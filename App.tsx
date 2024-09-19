@@ -1,3 +1,9 @@
+declare global{
+  var apiKey: string
+}
+globalThis.apiKey = '16f82f59dec74ab3be8140412241809';
+
+
 import React from 'react';
 import {
   SafeAreaView,
@@ -5,6 +11,8 @@ import {
   StyleSheet,
   useColorScheme,
 } from 'react-native';
+
+
 
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 

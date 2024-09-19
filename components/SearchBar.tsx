@@ -44,6 +44,7 @@ export default function SearchBar({
   );
 }
 
+
 const styles = StyleSheet.create({
   headerContainer: {
     backgroundColor: '#90EE90', // Light green color

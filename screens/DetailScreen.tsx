@@ -12,9 +12,9 @@ import {
   ScrollView,
 } from 'react-native';
 
-import {fetchWeather} from './ListScreen';
+import {fetchWeather} from '../utils';
 import {Weather, Forecast} from '../models/Weather';
-import createWeather from '../models/Weather';
+import {createWeather, getWeekday} from '../utils';
 
 interface DetailScreenProps {
   city: string;
@@ -36,7 +36,7 @@ interface DailyForecastProps {
 
 export default function DetailScreen({city, onPress}: DetailScreenProps) {
   const [weather, setWeather] = useState<Weather>();
-  const apiKey = '16f82f59dec74ab3be8140412241809';
+  // const apiKey = '16f82f59dec74ab3be8140412241809';
 
   useEffect(() => {
     (async () => {
@@ -118,7 +118,7 @@ function DailyForecast({forecast}: DailyForecastProps) {
         data={forecast}
         renderItem={({item}) => (
             <View style={styles.dayItem}>
-              <Text>{item.datetime}</Text>
+              <Text>{getWeekday(item.datetime)}</Text>
               <Image
                 source={{uri: item.icon}}
                 style={styles.forecastIcon}></Image>

@@ -8,32 +8,15 @@ import {
   Pressable,
 } from 'react-native';
 
+import {fetchWeather} from '../utils';
+
 import ListItem from '../components/ListItem';
 import SearchBar from '../components/SearchBar';
 import DetailScreen from './DetailScreen';
 import {Weather} from '../models/Weather';
-import createWeather from '../models/Weather';
+import {createWeather} from '../utils';
 
-var CITIES = require('../CITIES.json');
-
-
-export async function fetchWeather(apiKey: string, city: string, days: number) {
-  const url = `https://api.weatherapi.com/v1/forecast.json?days=${days.toString()}&key=${apiKey}&q=${city}&aqi=no&alerts=no`;
-
-  // handle loading
-
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error('Could not fetch the data for that resource');
-    }
-    const data = await response.json();
-    return data;
-  } catch (error: any) {
-    console.error(error);
-    return null;
-  }
-}
+const CITIES = require('../CITIES.json');
 
 
 export default function ListScreen() {
@@ -44,7 +27,7 @@ export default function ListScreen() {
   const [filterText, setFilterText] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
-  const apiKey = '16f82f59dec74ab3be8140412241809';
+  // const apiKey = '16f82f59dec74ab3be8140412241809';
 
 
   function isCityInList(city: string, arr: Weather[]) {
