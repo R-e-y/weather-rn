@@ -57,4 +57,7 @@ target 'new_rn_project' do
     )
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
+
+  pod 'react-native-contacts', :path => '../node_modules/react-native-contacts'
+
 end
