@@ -55,7 +55,7 @@ export default function DetailScreen({city, onPress}: DetailScreenProps) {
           <ScrollView>
             <HourlyForecast forecast={weather.hourly_f} />
 
-            <DailyForecast forecast={weather.daily_f}/>
+            <DailyForecast forecast={weather.daily_f} />
 
             <GeneralInfo />
           </ScrollView>
@@ -76,9 +76,7 @@ export default function DetailScreen({city, onPress}: DetailScreenProps) {
 function CurrentInfo({weather}: CurrentInfoProps) {
   return (
     <View style={styles.currentContainer}>
-      <Image
-        source={{uri: weather.icon}}
-        style={styles.currentIcon}></Image>
+      <Image source={{uri: weather.icon}} style={styles.currentIcon}></Image>
       <Text style={styles.currentCity}>{weather.city}</Text>
       <Text style={styles.currentTemp}>{weather.temp}°</Text>
       <Text>{weather.description}</Text>
@@ -92,17 +90,21 @@ function CurrentInfo({weather}: CurrentInfoProps) {
 function HourlyForecast({forecast}: HourlyForecastProps) {
   return (
     <View style={styles.hourlyContainer}>
+      <View style={styles.forecastTextItem}>
+        <Text> HOURLY FORECAST </Text> 
+        </View>
+      
       <FlatList
         data={forecast}
         horizontal={true}
         renderItem={({item}) => (
-            <View style={styles.hourItem}>
-              <Text>{item.datetime}</Text>
-              <Image
-                source={{uri: item.icon}}
-                style={styles.forecastIcon}></Image>
-              <Text>{item.temp}°</Text>
-            </View>
+          <View style={styles.hourItem}>
+            <Text>{item.datetime}</Text>
+            <Image
+              source={{uri: item.icon}}
+              style={styles.forecastIcon}></Image>
+            <Text>{item.temp}°</Text>
+          </View>
         )}
       />
     </View>
@@ -110,27 +112,33 @@ function HourlyForecast({forecast}: HourlyForecastProps) {
 }
 
 function DailyForecast({forecast}: DailyForecastProps) {
-  return( 
-  <View style={styles.dailyContainer}>
-    <Text> {forecast.length}-DAY FORECAST </Text>
-    <View >
-      <FlatList
-        data={forecast}
-        renderItem={({item}) => (
+  return (
+    <View style={styles.dailyContainer}>
+      <View>
+
+      <Text style={styles.forecastTextItem}> {forecast.length}-DAY FORECAST </Text>
+      </View>
+      <View>
+        <FlatList
+          data={forecast}
+          renderItem={({item}) => (
             <View style={styles.dayItem}>
-              <Text>{getWeekday(item.datetime)}</Text>
+              <Text style={styles.dayText}>{getWeekday(item.datetime)}</Text>
               <Image
                 source={{uri: item.icon}}
                 style={styles.forecastIcon}></Image>
-              <Text>{item.temp_min}° {item.temp_max}°</Text>
+
+
+              <View style={styles.dayTemp}>
+
+              <Text>{item.temp_min}° </Text>
+              <Text>{item.temp_max}°</Text>
+              </View>
             </View>
-        )}
-      />
-
+          )}
+        />
+      </View>
     </View>
-    
-
-  </View>
   );
 }
 
@@ -165,7 +173,7 @@ const styles = StyleSheet.create({
     height: 70,
   },
 
-  scrollWrapper:{
+  scrollWrapper: {
     flex: 0.7,
     padding: 5,
   },
@@ -179,11 +187,13 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 15,
     borderBottomRightRadius: 15,
     margin: 5,
+    padding: 10,
   },
   hourItem: {
     flexDirection: 'column',
     alignItems: 'center',
-    margin: 10,
+    margin: 5,
+    
   },
   forecastIcon: {
     width: 50,
@@ -191,7 +201,6 @@ const styles = StyleSheet.create({
   },
 
   dailyContainer: {
-    backgroundColor: 'pink',
     // flex: 0.25,
     borderWidth: 1,
     borderTopLeftRadius: 15,
@@ -199,17 +208,38 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 15,
     borderBottomRightRadius: 15,
     margin: 5,
+    padding: 15,
   },
   dayItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    margin: 10,
-    borderWidth: 1,
+    justifyContent: 'space-between',
+    paddingLeft: 10,
+    paddingRight: 10,
+
+    // borderTopWidth: 1
+  },
+  dayText: {
+    flex: 0.3,
+  },
+
+  dayTemp: {
+    flex: 0.5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    
   },
 
   generalContainer: {
     // flex: 0.3,
     // borderWidth: 1,
     // margin:10
+  },
+
+  forecastTextItem: {
+    flex: 1,
+    // borderWidth:1,
+    borderBottomWidth:1,
+    
   },
 });
