@@ -20,6 +20,8 @@ var CITIES = require('../CITIES.json');
 export async function fetchWeather(apiKey: string, city: string, days: number) {
   const url = `https://api.weatherapi.com/v1/forecast.json?days=${days.toString()}&key=${apiKey}&q=${city}&aqi=no&alerts=no`;
 
+  // handle loading
+
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -33,6 +35,7 @@ export async function fetchWeather(apiKey: string, city: string, days: number) {
   }
 }
 
+
 export default function ListScreen() {
   const [data, setData] = useState(CITIES);
   const [fullData, setFullData] = useState(CITIES);
@@ -41,8 +44,8 @@ export default function ListScreen() {
   const [filterText, setFilterText] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
-
   const apiKey = '16f82f59dec74ab3be8140412241809';
+
 
   function isCityInList(city: string, arr: Weather[]) {
     return arr.some(obj => Object.values(obj).includes(city));
@@ -87,7 +90,7 @@ export default function ListScreen() {
 
   function handleFilterTextChange(filterText: string) {
     setFilterText(filterText);
-    const filteredData = fullData.filter(city =>
+    const filteredData = fullData.filter((city) =>
       city.name.toLowerCase().startsWith(filterText.toLowerCase()),
     );
     setData(filteredData);
@@ -95,9 +98,7 @@ export default function ListScreen() {
 
   if (isOpen) {
     return (
-      <View>
         <DetailScreen onPress={handleCloseDetails} city={selectedCity} />
-      </View>
     );
   } else {
     return (

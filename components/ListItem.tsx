@@ -19,7 +19,7 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {Weather} from '../models/Weather';
 
 interface ListItemProps {
-  item: object;
+  item: Weather;
   onItemSelect: (city: string) => void;
   onPress: () => void;
 }
@@ -34,7 +34,6 @@ export default function ListItem({item, onItemSelect, onPress}: ListItemProps) {
             onItemSelect(item.city);
           }}>
         <Text
-          
           style={[
             styles.sectionTitle,
             {
@@ -53,10 +52,11 @@ export default function ListItem({item, onItemSelect, onPress}: ListItemProps) {
             ]}>
             {item.description}
           </Text>
-          <Text>{item.temp}</Text>
+          <Text>{item.temp}°</Text>
         </View>
-        <Text>Maximum: {item.temp_max}</Text>
-        <Text>Minimum: {item.temp_min}</Text>
+        <Text>H: {item.temp_max}°</Text>
+        <Text>L: {item.temp_min}°</Text>
+        <Text>{item.localtime}</Text>
       </TouchableOpacity>
     </>
   );
