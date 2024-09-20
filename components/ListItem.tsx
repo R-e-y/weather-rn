@@ -1,22 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import {
-  PermissionsAndroid,
-  Platform,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  Button,
-  useColorScheme,
-  View,
-  FlatList,
-  TouchableOpacity,
-  ListRenderItem,
-} from 'react-native';
+import React from 'react';
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-
-import {Weather} from '../models/Weather';
+import {Weather} from '../types/Weather';
+import RadiusWrapper from './RadiusWrapper';
 
 interface ListItemProps {
   item: Weather;
@@ -25,63 +11,38 @@ interface ListItemProps {
 }
 
 export default function ListItem({item, onItemSelect, onPress}: ListItemProps) {
-  const isDarkMode = useColorScheme() === 'dark';
-
   return (
-    <>
-      <TouchableOpacity onPress={() => {
-            onPress();
-            onItemSelect(item.city);
-          }}>
-        <Text
-          style={[
-            styles.sectionTitle,
-            {
-              color: isDarkMode ? Colors.white : Colors.black,
-            },
-          ]}>
-          {item.city}
-        </Text>
-        <View style={styles.sectionContent}>
-          <Text
-            style={[
-              styles.sectionDescription,
-              {
-                color: isDarkMode ? Colors.light : Colors.dark,
-              },
-            ]}>
-            {item.description}
-          </Text>
-          <Text>{item.temp}°</Text>
+    <RadiusWrapper>
+      <TouchableOpacity
+        onPress={() => {
+          onPress();
+          onItemSelect(item.city);
+        }}>
+        <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
+          <View>
+            <Text style={{fontSize: 25, fontWeight: 'bold'}}>{item.city}</Text>
+            <Text>{item.localtime}</Text>
+            <Text style={styles.bottomLine}>{item.description}</Text>
+          </View>
+
+          <View style={{alignItems: 'center', justifyContent: 'space-between'}}>
+            <Text style={{fontSize: 35}}>{item.temp}°</Text>
+            <View style={styles.bottomLine}>
+              <Text>
+                L:{item.temp_min}° H:{item.temp_max}°
+              </Text>
+            </View>
+          </View>
+
         </View>
-        <Text>H: {item.temp_max}°</Text>
-        <Text>L: {item.temp_min}°</Text>
-        <Text>{item.localtime}</Text>
       </TouchableOpacity>
-    </>
+    </RadiusWrapper>
   );
 }
 
+
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  bottomLine: {
+    marginTop: 20,
   },
 });

@@ -13,8 +13,9 @@ import {
 } from 'react-native';
 
 import {fetchWeather} from '../utils';
-import {Weather, Forecast} from '../models/Weather';
+import {Weather, Forecast} from '../types/Weather';
 import {createWeather, getWeekday} from '../utils';
+import RadiusWrapper from '../components/RadiusWrapper';
 
 interface DetailScreenProps {
   city: string;
@@ -33,6 +34,8 @@ interface DailyForecastProps {
   forecast: Forecast[];
   // function to get weekdays from date
 }
+
+
 
 export default function DetailScreen({city, onPress}: DetailScreenProps) {
   const [weather, setWeather] = useState<Weather>();
@@ -89,11 +92,12 @@ function CurrentInfo({weather}: CurrentInfoProps) {
 
 function HourlyForecast({forecast}: HourlyForecastProps) {
   return (
-    <View style={styles.hourlyContainer}>
+    // <View style={styles.hourlyContainer}>
+
+    <RadiusWrapper>
       <View style={styles.forecastTextItem}>
-        <Text> HOURLY FORECAST </Text> 
-        </View>
-      
+        <Text> HOURLY FORECAST </Text>
+      </View>
       <FlatList
         data={forecast}
         horizontal={true}
@@ -107,16 +111,20 @@ function HourlyForecast({forecast}: HourlyForecastProps) {
           </View>
         )}
       />
-    </View>
+    </RadiusWrapper>
+
+    // </View>
   );
 }
 
 function DailyForecast({forecast}: DailyForecastProps) {
   return (
-    <View style={styles.dailyContainer}>
-      <View>
-
-      <Text style={styles.forecastTextItem}> {forecast.length}-DAY FORECAST </Text>
+    // /<View style={styles.dailyContainer}>
+      <RadiusWrapper>
+        <View>
+        <Text style={styles.forecastTextItem}>
+          {forecast.length}-DAY FORECAST
+        </Text>
       </View>
       <View>
         <FlatList
@@ -128,17 +136,17 @@ function DailyForecast({forecast}: DailyForecastProps) {
                 source={{uri: item.icon}}
                 style={styles.forecastIcon}></Image>
 
-
               <View style={styles.dayTemp}>
-
-              <Text>{item.temp_min}° </Text>
-              <Text>{item.temp_max}°</Text>
+                <Text>{item.temp_min}° </Text>
+                <Text>{item.temp_max}°</Text>
               </View>
             </View>
           )}
         />
       </View>
-    </View>
+      </RadiusWrapper>
+      
+    // /</View>
   );
 }
 
@@ -178,38 +186,37 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 
-  hourlyContainer: {
-    // flex: 2,
-    borderWidth: 1,
-    backgroundColor: 'beige',
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    margin: 5,
-    padding: 10,
-  },
+  // hourlyContainer: {
+  //   // flex: 2,
+  //   borderWidth: 1,
+  //   backgroundColor: 'beige',
+  //   borderTopLeftRadius: 15,
+  //   borderTopRightRadius: 15,
+  //   borderBottomLeftRadius: 15,
+  //   borderBottomRightRadius: 15,
+  //   margin: 5,
+  //   padding: 10,
+  // },
   hourItem: {
     flexDirection: 'column',
     alignItems: 'center',
     margin: 5,
-    
   },
   forecastIcon: {
     width: 50,
     height: 50,
   },
 
-  dailyContainer: {
-    // flex: 0.25,
-    borderWidth: 1,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    margin: 5,
-    padding: 15,
-  },
+  // dailyContainer: {
+  //   // flex: 0.25,
+  //   borderWidth: 1,
+  //   borderTopLeftRadius: 15,
+  //   borderTopRightRadius: 15,
+  //   borderBottomLeftRadius: 15,
+  //   borderBottomRightRadius: 15,
+  //   margin: 5,
+  //   padding: 15,
+  // },
   dayItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -227,7 +234,6 @@ const styles = StyleSheet.create({
     flex: 0.5,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    
   },
 
   generalContainer: {
@@ -239,7 +245,16 @@ const styles = StyleSheet.create({
   forecastTextItem: {
     flex: 1,
     // borderWidth:1,
-    borderBottomWidth:1,
-    
+    borderBottomWidth: 1,
+  },
+
+  radiusWrapper: {
+    borderWidth: 1,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
+    margin: 5,
+    padding: 15,
   },
 });
