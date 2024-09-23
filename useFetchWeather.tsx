@@ -9,9 +9,6 @@ const useFetchWeather = (city: string, days: number) => {
   const [error, setError] = useState(null);
   let hasForecast = false
 
-
-  console.log('HII2', city )
-
   // const url = `${api}${city}&appid=${apiKey}`;
   const url = `https://api.weatherapi.com/v1/forecast.json?days=${days.toString()}&key=${apiKey}&q=${city}&aqi=no&alerts=no`;
 

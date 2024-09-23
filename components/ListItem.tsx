@@ -6,18 +6,14 @@ import RadiusWrapper from './RadiusWrapper';
 
 interface ListItemProps {
   item: Weather;
-  onItemSelect: (city: string) => void;
   onPress: () => void;
 }
 
-export default function ListItem({item, onItemSelect, onPress}: ListItemProps) {
+export default function ListItem({item,  onPress}: ListItemProps) {
   return (
     <RadiusWrapper styles={{backgroundColor: 'white'}}>
       <TouchableOpacity
-        onPress={() => {
-          onPress();
-          onItemSelect(item.city);
-        }}>
+        onPress={onPress}>
         <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
           <View>
             <Text style={{fontSize: 25, fontWeight: 'bold'}}>{item.city}</Text>
