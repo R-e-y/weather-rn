@@ -1,3 +1,5 @@
+import { ProgressBarAndroidBase } from "react-native";
+
 export type Weather = {
     city: string;
     localtime:string;
@@ -26,3 +28,11 @@ export type Forecast = {
   rain_prob:number;
   icon: string;
 }
+
+// rain prob
+// feels like
+// pressure: number;
+// humidity: number;
+// visibility: number;
+// sunrise: string;
+// sunset: string;

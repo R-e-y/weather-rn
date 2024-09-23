@@ -26,4 +26,3 @@ export default function SearchBar({
   );
 }
 
-const styles = StyleSheet.create({});

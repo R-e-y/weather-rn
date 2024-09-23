@@ -96,9 +96,11 @@ export default function ListScreen() {
               <FlatList
                 data={data}
                 renderItem={({item}) => (
-                  <Text onPress={() => handleSelect(item.name)}>
-                    {item.name}
-                  </Text>
+                  <View style={styles.dropText}>
+                    <Text onPress={() => handleSelect(item.name)}>
+                      {item.name}
+                    </Text>
+                  </View>
                 )}
               />
             </View>
@@ -133,11 +135,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(243, 243, 243)',
     flex: 1,
     width: '100%',
+
   },
 
   flat: {
     position: 'relative',
     zIndex: 1,
     flex: 1,
+  },
+
+  dropText: {
+    paddingLeft: 15,
+    marginTop: 5,
+    marginBottom: 10,
+
   },
 });

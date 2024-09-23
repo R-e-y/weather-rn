@@ -12,7 +12,7 @@ interface ListItemProps {
 
 export default function ListItem({item, onItemSelect, onPress}: ListItemProps) {
   return (
-    <RadiusWrapper>
+    <RadiusWrapper styles={{backgroundColor: 'white'}}>
       <TouchableOpacity
         onPress={() => {
           onPress();

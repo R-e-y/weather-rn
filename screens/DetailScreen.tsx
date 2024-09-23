@@ -10,12 +10,14 @@ import {
   Image,
   FlatList,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 
 import {fetchWeather} from '../utils';
 import {Weather, Forecast} from '../types/Weather';
 import {createWeather, getWeekday} from '../utils';
 import RadiusWrapper from '../components/RadiusWrapper';
+import useFetchWeather from '../useFetchWeather';
 
 interface DetailScreenProps {
   city: string;
@@ -26,28 +28,43 @@ interface CurrentInfoProps {
   weather: Weather;
 }
 
-interface HourlyForecastProps {
+interface ForecastProps {
   forecast: Forecast[];
 }
 
-interface DailyForecastProps {
-  forecast: Forecast[];
-  // function to get weekdays from date
-}
+// interface DailyForecastProps {
+//   forecast: Forecast[];
+// }
 
 
 
 export default function DetailScreen({city, onPress}: DetailScreenProps) {
-  const [weather, setWeather] = useState<Weather>();
-  // const apiKey = '16f82f59dec74ab3be8140412241809';
+  // const [weather, setWeather] = useState<Weather>();
 
-  useEffect(() => {
-    (async () => {
-      const weatherData = await fetchWeather(apiKey, city, 10);
-      const newWeather = createWeather(weatherData, true);
-      setWeather(newWeather);
-    })();
-  }, []);
+  const {data: weather, isLoading, error} = useFetchWeather(city, 10)
+
+  // useEffect(() => {
+  //   (async () => {
+      // const weatherData = await fetchWeather(apiKey, city, 10);
+  //     const newWeather = createWeather(weatherData, true);
+  //     setWeather(newWeather);
+  //   })();
+  // }, []);
+
+  // data? console.log(data, 'PPPPPPP') : console.log('PODOZHDAT NADO')
+
+  // const weather = createWeather(weatherData, true);
+  if (error){ 
+    console.error(error)
+    return <Text>Could not fetch data</Text>
+  }
+
+  if (isLoading){ return(
+  <View style={{ flex: 1, justifyContent: "center" }}>
+    <ActivityIndicator size="large" />
+  </View>
+  )
+}
 
   if (weather) {
     return (
@@ -90,14 +107,14 @@ function CurrentInfo({weather}: CurrentInfoProps) {
   );
 }
 
-function HourlyForecast({forecast}: HourlyForecastProps) {
+function HourlyForecast({forecast}: ForecastProps) {
   return (
     // <View style={styles.hourlyContainer}>
 
-    <RadiusWrapper>
-      <View style={styles.forecastTextItem}>
-        <Text> HOURLY FORECAST </Text>
-      </View>
+    <RadiusWrapper styles={{backgroundColor: 'lightblue'}} title={'HOURLY FORECAST'}>
+      {/* <View style={styles.forecastTextItem}>
+        <Text style={{color:'grey'}}> HOURLY FORECAST </Text>
+      </View> */}
       <FlatList
         data={forecast}
         horizontal={true}
@@ -117,15 +134,15 @@ function HourlyForecast({forecast}: HourlyForecastProps) {
   );
 }
 
-function DailyForecast({forecast}: DailyForecastProps) {
+function DailyForecast({forecast}: ForecastProps) {
   return (
     // /<View style={styles.dailyContainer}>
-      <RadiusWrapper>
-        <View>
-        <Text style={styles.forecastTextItem}>
+      <RadiusWrapper styles={{backgroundColor: 'lightblue'}} title={'10-DAY FORECAST'}>
+        
+        {/* <Text style={{color:'grey'}}>
           {forecast.length}-DAY FORECAST
-        </Text>
-      </View>
+        </Text> */}
+      
       <View>
         <FlatList
           data={forecast}
@@ -151,13 +168,17 @@ function DailyForecast({forecast}: DailyForecastProps) {
 }
 
 function GeneralInfo() {
-  return <View style={styles.generalContainer}></View>;
+  return (
+  <View style={styles.generalContainer}>
+
+  </View>
+  );
 }
 
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
-    borderWidth: 1,
+    // borderWidth: 1,
     // justifyContent: 'space-between',
     // padding: 20,
     // margin: 10,
@@ -165,7 +186,7 @@ const styles = StyleSheet.create({
 
   currentContainer: {
     flex: 0.3,
-    borderWidth: 1,
+    // borderWidth: 1,
     alignItems: 'center',
     // margin:10
   },
@@ -200,7 +221,9 @@ const styles = StyleSheet.create({
   hourItem: {
     flexDirection: 'column',
     alignItems: 'center',
-    margin: 5,
+    padding: 5,
+    borderTopWidth:1,
+    borderTopColor: 'grey'
   },
   forecastIcon: {
     width: 50,
@@ -223,6 +246,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingLeft: 10,
     paddingRight: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'grey'
 
     // borderTopWidth: 1
   },
@@ -243,18 +268,19 @@ const styles = StyleSheet.create({
   },
 
   forecastTextItem: {
-    flex: 1,
+    // flex: 1,
+    // color: 'lightgrey'
     // borderWidth:1,
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
   },
 
-  radiusWrapper: {
-    borderWidth: 1,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    margin: 5,
-    padding: 15,
-  },
+  // radiusWrapper: {
+  //   // borderWidth: 1,
+  //   borderTopLeftRadius: 15,
+  //   borderTopRightRadius: 15,
+  //   borderBottomLeftRadius: 15,
+  //   borderBottomRightRadius: 15,
+  //   margin: 5,
+  //   padding: 15,
+  // },
 });
