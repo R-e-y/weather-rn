@@ -1,22 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {
-  PermissionsAndroid,
-  Platform,
   FlatList,
   View,
   Text,
-  Pressable,
   StyleSheet,
 } from 'react-native';
-
-import {fetchWeather} from '../utils';
 
 import ListItem from '../components/ListItem';
 import SearchBar from '../components/SearchBar';
 import DetailScreen from './DetailScreen';
 import {Weather} from '../types/Weather';
-import {createWeather} from '../utils';
-import RadiusWrapper from '../components/RadiusWrapper';
 import Header from '../components/Header';
 import useFetchWeather from '../useFetchWeather';
 
@@ -32,6 +25,7 @@ export default function ListScreen() {
 
   const {data: weather, isLoading, error} = useFetchWeather(cityToAdd, 1);
 
+  
   useEffect(() => {
     if (weather) {
       setWeatherList(prev => [...prev, weather]);

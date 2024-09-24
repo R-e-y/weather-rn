@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 
 import {Weather} from '../types/Weather';
-import RadiusWrapper from './RadiusWrapper';
+import RadiusWrapper from './DetailWrapper';
 
 interface ListItemProps {
   item: Weather;
@@ -11,7 +11,7 @@ interface ListItemProps {
 
 export default function ListItem({item,  onPress}: ListItemProps) {
   return (
-    <RadiusWrapper styles={{backgroundColor: 'white'}}>
+    <RadiusWrapper style={{backgroundColor: 'white'}}>
       <TouchableOpacity
         onPress={onPress}>
         <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>

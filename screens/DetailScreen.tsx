@@ -13,18 +13,18 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import {fetchWeather} from '../utils';
 import {Weather, Forecast} from '../types/Weather';
-import {createWeather, getWeekday} from '../utils';
-import RadiusWrapper from '../components/RadiusWrapper';
+import {getWeekday} from '../utils';
+import RadiusWrapper from '../components/DetailWrapper';
 import useFetchWeather from '../useFetchWeather';
+import DetailWrapper from '../components/DetailWrapper';
 
 interface DetailScreenProps {
   city: string;
   onPress: () => void;
 }
 
-interface CurrentInfoProps {
+interface WeatherProps {
   weather: Weather;
 }
 
@@ -32,39 +32,21 @@ interface ForecastProps {
   forecast: Forecast[];
 }
 
-// interface DailyForecastProps {
-//   forecast: Forecast[];
-// }
-
-
-
 export default function DetailScreen({city, onPress}: DetailScreenProps) {
-  // const [weather, setWeather] = useState<Weather>();
+  const {data: weather, isLoading, error} = useFetchWeather(city, 10);
 
-  const {data: weather, isLoading, error} = useFetchWeather(city, 10)
-
-  // useEffect(() => {
-  //   (async () => {
-      // const weatherData = await fetchWeather(apiKey, city, 10);
-  //     const newWeather = createWeather(weatherData, true);
-  //     setWeather(newWeather);
-  //   })();
-  // }, []);
-
-  // data? console.log(data, 'PPPPPPP') : console.log('PODOZHDAT NADO')
-
-  // const weather = createWeather(weatherData, true);
-  if (error){ 
-    console.error(error)
-    return <Text>Could not fetch data</Text>
+  if (error) {
+    console.error(error);
+    return <Text>Could not fetch data</Text>;
   }
 
-  if (isLoading){ return(
-  <View style={{ flex: 1, justifyContent: "center" }}>
-    <ActivityIndicator size="large" />
-  </View>
-  )
-}
+  if (isLoading) {
+    return (
+      <View style={{flex: 1, justifyContent: 'center'}}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   if (weather) {
     return (
@@ -77,7 +59,7 @@ export default function DetailScreen({city, onPress}: DetailScreenProps) {
 
             <DailyForecast forecast={weather.daily_f} />
 
-            <GeneralInfo />
+            <GeneralInfo weather={weather} />
           </ScrollView>
         </View>
 
@@ -93,7 +75,7 @@ export default function DetailScreen({city, onPress}: DetailScreenProps) {
   }
 }
 
-function CurrentInfo({weather}: CurrentInfoProps) {
+function CurrentInfo({weather}: WeatherProps) {
   return (
     <View style={styles.currentContainer}>
       <Image source={{uri: weather.icon}} style={styles.currentIcon}></Image>
@@ -109,89 +91,113 @@ function CurrentInfo({weather}: CurrentInfoProps) {
 
 function HourlyForecast({forecast}: ForecastProps) {
   return (
-    // <View style={styles.hourlyContainer}>
-
-    <RadiusWrapper styles={{backgroundColor: 'lightblue'}} title={'HOURLY FORECAST'}>
-      {/* <View style={styles.forecastTextItem}>
-        <Text style={{color:'grey'}}> HOURLY FORECAST </Text>
-      </View> */}
+    <RadiusWrapper
+      style={styles.wrapper}
+      childrenStyle={{paddingLeft: 0, paddingRight: 0}}
+      title={'HOURLY FORECAST'}>
       <FlatList
         data={forecast}
         horizontal={true}
         renderItem={({item}) => (
           <View style={styles.hourItem}>
             <Text>{item.datetime}</Text>
-            <Image
-              source={{uri: item.icon}}
-              style={styles.forecastIcon}></Image>
+            <View>
+              <Image
+                source={{uri: item.icon}}
+                style={styles.forecastIcon}></Image>
+              {item.rain_prob ? (
+                <Text style={styles.rainProb}>{item.rain_prob}%</Text>
+              ) : null}
+            </View>
             <Text>{item.temp}°</Text>
           </View>
         )}
       />
     </RadiusWrapper>
-
-    // </View>
   );
 }
 
 function DailyForecast({forecast}: ForecastProps) {
   return (
-    // /<View style={styles.dailyContainer}>
-      <RadiusWrapper styles={{backgroundColor: 'lightblue'}} title={'10-DAY FORECAST'}>
-        
-        {/* <Text style={{color:'grey'}}>
-          {forecast.length}-DAY FORECAST
-        </Text> */}
-      
-      <View>
-        <FlatList
-          data={forecast}
-          renderItem={({item}) => (
-            <View style={styles.dayItem}>
-              <Text style={styles.dayText}>{getWeekday(item.datetime)}</Text>
+    <RadiusWrapper style={styles.wrapper} title={'10-DAY FORECAST'}>
+      <FlatList
+        scrollEnabled={false}
+        data={forecast}
+        renderItem={({item}) => (
+          <View style={styles.dayItem}>
+            <Text style={styles.dayText}>{getWeekday(item.datetime)}</Text>
+            <View style={{alignItems: 'center',}}>
               <Image
                 source={{uri: item.icon}}
                 style={styles.forecastIcon}></Image>
-
-              <View style={styles.dayTemp}>
-                <Text>{item.temp_min}° </Text>
-                <Text>{item.temp_max}°</Text>
-              </View>
+                {item.rain_prob ? (
+              <Text style={styles.rainProb}>{item.rain_prob}%</Text>
+            ) : null}
             </View>
-          )}
-        />
-      </View>
-      </RadiusWrapper>
-      
-    // /</View>
+
+            <View style={styles.dayTemp}>
+              <Text>{item.temp_min}° </Text>
+              <Text>{item.temp_max}°</Text>
+            </View>
+          </View>
+        )}
+      />
+    </RadiusWrapper>
   );
 }
 
-function GeneralInfo() {
-  return (
-  <View style={styles.generalContainer}>
+function GeneralInfo({weather}: WeatherProps) {
+  // ------rain prob ------ remove from weather type, add func to calculate 24 forecast starting from now
+  // feels like
+  // pressure
 
-  </View>
+  // humidity
+  // visbility
+
+  // sunrise
+  // sunset
+
+  return (
+    <View style={styles.generalContainer}>
+      <View style={{flex: 1, flexDirection: 'row'}}>
+        <DetailWrapper style={styles.wrapperSquare} title="FEELS LIKE">
+          <Text>{weather.feels_like}</Text>
+        </DetailWrapper>
+
+        <DetailWrapper style={styles.wrapperSquare} title="PRESSURE">
+          <Text>{weather.pressure}</Text>
+        </DetailWrapper>
+      </View>
+
+      <View style={{flex: 1, flexDirection: 'row'}}>
+        <DetailWrapper style={styles.wrapperSquare} title="HUMIDITY">
+          <Text>{weather.humidity}</Text>
+        </DetailWrapper>
+
+        <DetailWrapper style={styles.wrapperSquare} title="VISIBILITY">
+          <Text>{weather.visibility}</Text>
+        </DetailWrapper>
+      </View>
+
+      <DetailWrapper style={styles.wrapper} title="TWILIGHT">
+        <Text>{weather.sunrise}</Text>
+        <Text>{weather.sunset}</Text>
+      </DetailWrapper>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
-    // borderWidth: 1,
-    // justifyContent: 'space-between',
-    // padding: 20,
-    // margin: 10,
   },
 
   currentContainer: {
     flex: 0.3,
-    // borderWidth: 1,
     alignItems: 'center',
-    // margin:10
   },
   currentCity: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
   },
   currentTemp: {
@@ -204,53 +210,33 @@ const styles = StyleSheet.create({
 
   scrollWrapper: {
     flex: 0.7,
-    padding: 5,
+    padding: 15,
   },
-
-  // hourlyContainer: {
-  //   // flex: 2,
-  //   borderWidth: 1,
-  //   backgroundColor: 'beige',
-  //   borderTopLeftRadius: 15,
-  //   borderTopRightRadius: 15,
-  //   borderBottomLeftRadius: 15,
-  //   borderBottomRightRadius: 15,
-  //   margin: 5,
-  //   padding: 10,
-  // },
   hourItem: {
+    flex:1,
     flexDirection: 'column',
     alignItems: 'center',
-    padding: 5,
-    borderTopWidth:1,
-    borderTopColor: 'grey'
+    justifyContent: 'space-between',
+    paddingTop: 10,
+    paddingLeft: 15,
+    borderTopWidth: 0.5,
+    borderTopColor: 'grey',
+    // borderWidth:1
   },
   forecastIcon: {
-    width: 50,
-    height: 50,
+    width: 35,
+    height: 35,
   },
-
-  // dailyContainer: {
-  //   // flex: 0.25,
-  //   borderWidth: 1,
-  //   borderTopLeftRadius: 15,
-  //   borderTopRightRadius: 15,
-  //   borderBottomLeftRadius: 15,
-  //   borderBottomRightRadius: 15,
-  //   margin: 5,
-  //   padding: 15,
-  // },
   dayItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingLeft: 10,
-    paddingRight: 10,
-    borderTopWidth: 1,
-    borderTopColor: 'grey'
-
-    // borderTopWidth: 1
+    // paddingLeft: 10,
+    // paddingRight: 10,
+    borderTopWidth: 0.5,
+    borderTopColor: 'grey',
   },
+
   dayText: {
     flex: 0.3,
   },
@@ -267,20 +253,21 @@ const styles = StyleSheet.create({
     // margin:10
   },
 
-  forecastTextItem: {
-    // flex: 1,
-    // color: 'lightgrey'
-    // borderWidth:1,
-    // borderBottomWidth: 1,
+  wrapper: {
+    backgroundColor: 'lightblue',
+    minHeight: 170,
   },
 
-  // radiusWrapper: {
-  //   // borderWidth: 1,
-  //   borderTopLeftRadius: 15,
-  //   borderTopRightRadius: 15,
-  //   borderBottomLeftRadius: 15,
-  //   borderBottomRightRadius: 15,
-  //   margin: 5,
-  //   padding: 15,
-  // },
+  wrapperSquare: {
+    backgroundColor: 'lightblue',
+    height: 170,
+    width: 170,
+  },
+
+  rainProb: {
+    color: 'rgb(69, 135, 225)',
+    fontSize: 12,
+    fontWeight: '700',
+    textAlign: 'center'
+  },
 });

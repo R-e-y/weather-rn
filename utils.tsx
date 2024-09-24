@@ -1,20 +1,20 @@
-export async  function fetchWeather(apiKey: string, city: string, days: number) {
-    const url = `https://api.weatherapi.com/v1/forecast.json?days=${days.toString()}&key=${apiKey}&q=${city}&aqi=no&alerts=no`;
+// export async  function fetchWeather(apiKey: string, city: string, days: number) {
+//     const url = `https://api.weatherapi.com/v1/forecast.json?days=${days.toString()}&key=${apiKey}&q=${city}&aqi=no&alerts=no`;
   
-    // handle loading
+//     // handle loading
   
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('Could not fetch the data for that resource');
-      }
-      const data = await response.json();
-      return data;
-    } catch (error: any) {
-      console.error(error);
-      return null;
-    }
-  }
+//     try {
+//       const response = await fetch(url);
+//       if (!response.ok) {
+//         throw new Error('Could not fetch the data for that resource');
+//       }
+//       const data = await response.json();
+//       return data;
+//     } catch (error: any) {
+//       console.error(error);
+//       return null;
+//     }
+//   }
 
 
 import { Weather } from "./types/Weather";

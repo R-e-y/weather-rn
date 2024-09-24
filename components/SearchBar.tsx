@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {StyleSheet, TextInput, View} from 'react-native';
-import RadiusWrapper from './RadiusWrapper';
+import RadiusWrapper from './DetailWrapper';
 
 interface SearchBarProps {
   filterText: string;
@@ -13,16 +13,29 @@ export default function SearchBar({
   handleFilterTextChange,
 }: SearchBarProps) {
   return (
-    <RadiusWrapper>  
-      <TextInput
-        value={filterText}
-        placeholder="Search for a city"
-        onChangeText={filterText => handleFilterTextChange(filterText)}
-        clearButtonMode="always"
-        autoCorrect={false}
-      />
-    </RadiusWrapper>
+    // <RadiusWrapper>  
+      <View style={styles.container}>
+        <TextInput
+          value={filterText}
+          placeholder="Search for a city"
+          onChangeText={filterText => handleFilterTextChange(filterText)}
+          clearButtonMode="always"
+          autoCorrect={false}
+        />
+      </View>
+    // </RadiusWrapper>
    
   );
 }
+
+const styles= StyleSheet.create({
+  container:{
+    margin: 5,
+    padding: 10,
+    borderRadius: 15,
+    backgroundColor: 'lightgrey'
+  }
+}
+  
+)
 
