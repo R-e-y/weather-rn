@@ -6,11 +6,10 @@ const useFetchWeather = (city: string, days: number) => {
   const [data, setData] = useState<Weather>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  let hasForecast = false
+  let hasForecast = false;
 
   const url = `https://api.weatherapi.com/v1/forecast.json?days=${days.toString()}&key=${apiKey}&q=${city}&aqi=no&alerts=no`;
 
-  
   useEffect(() => {
     const fetchWeather = async () => {
       setIsLoading(true);
@@ -22,20 +21,19 @@ const useFetchWeather = (city: string, days: number) => {
           throw new Error('Could not fetch the data for that resource');
         }
         const result = await response.json();
-        days > 1 ?  hasForecast = true : null
+        days > 1 ? (hasForecast = true) : null;
+
         const weather = createWeather(result, hasForecast);
         setData(weather);
-
       } catch (err: any) {
         setError(err.message);
-        
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchWeather();
-  }, [apiKey, city, days]);
+  }, [city, days]);
 
   return {data, isLoading, error};
 };

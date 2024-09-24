@@ -11,14 +11,10 @@ interface Props {
 export default function RadiusWrapper({children, ...props}: Props) {
   return (
     <View style={[styles.container, props.style]}>
+      
       {props.title ? (
         <View
-          style={{
-            paddingLeft: 15,
-            paddingRight: 15,
-            paddingTop: 5,
-            paddingBottom: 5,
-          }}>
+          style={styles.titleText}>
           <Text style={{color: 'grey'}}>{props.title}</Text>
         </View>
       ) : null}
@@ -34,15 +30,24 @@ const styles = StyleSheet.create({
     // flex:1,
     borderRadius: 15,
     margin: 5,
-    paddingBottom: 15,
+    paddingBottom: 5,
     paddingTop: 5,
     backgroundColor: 'lightgrey',
+    // borderWidth:1
     // backgroundColor: '#d3d3d3',
+  },
+
+  titleText:{
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingTop: 5,
+    paddingBottom: 5,
   },
 
   children: {
     flex:1,
     paddingLeft: 15,
     paddingRight: 15,
+    // borderWidth:1
   },
 });

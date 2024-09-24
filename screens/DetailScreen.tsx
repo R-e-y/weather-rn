@@ -55,9 +55,9 @@ export default function DetailScreen({city, onPress}: DetailScreenProps) {
 
         <View style={styles.scrollWrapper}>
           <ScrollView>
-            <HourlyForecast forecast={weather.hourly_f} />
+            <HourlyForecast forecast={weather.hourlyForecast} />
 
-            <DailyForecast forecast={weather.daily_f} />
+            <DailyForecast forecast={weather.dailyForecast} />
 
             <GeneralInfo weather={weather} />
           </ScrollView>
@@ -105,11 +105,12 @@ function HourlyForecast({forecast}: ForecastProps) {
               <Image
                 source={{uri: item.icon}}
                 style={styles.forecastIcon}></Image>
+
               {item.rain_prob ? (
                 <Text style={styles.rainProb}>{item.rain_prob}%</Text>
               ) : null}
             </View>
-            <Text>{item.temp}°</Text>
+            <Text>{typeof(item.temp) === 'string' ?  `${item.temp}` : `${item.temp}°`}</Text>
           </View>
         )}
       />
@@ -126,13 +127,13 @@ function DailyForecast({forecast}: ForecastProps) {
         renderItem={({item}) => (
           <View style={styles.dayItem}>
             <Text style={styles.dayText}>{getWeekday(item.datetime)}</Text>
-            <View style={{alignItems: 'center',}}>
+            <View style={{alignItems: 'center'}}>
               <Image
                 source={{uri: item.icon}}
                 style={styles.forecastIcon}></Image>
-                {item.rain_prob ? (
-              <Text style={styles.rainProb}>{item.rain_prob}%</Text>
-            ) : null}
+              {item.rain_prob ? (
+                <Text style={styles.rainProb}>{item.rain_prob}%</Text>
+              ) : null}
             </View>
 
             <View style={styles.dayTemp}>
@@ -147,7 +148,7 @@ function DailyForecast({forecast}: ForecastProps) {
 }
 
 function GeneralInfo({weather}: WeatherProps) {
-  // ------rain prob ------ remove from weather type, add func to calculate 24 forecast starting from now
+  // ------rain prob ------ remove from weather type, add func to calculate 24 hour forecast starting from now
   // feels like
   // pressure
 
@@ -213,12 +214,14 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   hourItem: {
-    flex:1,
+    flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 10,
+    paddingTop: 15,
+    paddingBottom: 10,
     paddingLeft: 15,
+    paddingRight: 5,
     borderTopWidth: 0.5,
     borderTopColor: 'grey',
     // borderWidth:1
@@ -235,6 +238,8 @@ const styles = StyleSheet.create({
     // paddingRight: 10,
     borderTopWidth: 0.5,
     borderTopColor: 'grey',
+    // borderWidth: 1,
+    minHeight: 50,
   },
 
   dayText: {
@@ -268,6 +273,6 @@ const styles = StyleSheet.create({
     color: 'rgb(69, 135, 225)',
     fontSize: 12,
     fontWeight: '700',
-    textAlign: 'center'
+    textAlign: 'center',
   },
 });

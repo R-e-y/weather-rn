@@ -4,6 +4,7 @@ import {
   View,
   Text,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 
 import ListItem from '../components/ListItem';
@@ -57,6 +58,14 @@ export default function ListScreen() {
     );
     setData(filteredData);
   }
+
+  // if (isLoading) {
+  //   return (
+  //     <View style={{flex: 1, justifyContent: 'center'}}>
+  //       <ActivityIndicator size="large" />
+  //     </View>
+  //   );
+  // }
 
   if (isOpen) {
     return <DetailScreen onPress={handleCloseDetails} city={selectedCity} />;
