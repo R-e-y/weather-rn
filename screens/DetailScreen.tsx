@@ -148,16 +148,6 @@ function DailyForecast({forecast}: ForecastProps) {
 }
 
 function GeneralInfo({weather}: WeatherProps) {
-  // ------rain prob ------ remove from weather type, add func to calculate 24 hour forecast starting from now
-  // feels like
-  // pressure
-
-  // humidity
-  // visbility
-
-  // sunrise
-  // sunset
-
   return (
     <View style={styles.generalContainer}>
       <View style={{flex: 1, flexDirection: 'row'}}>

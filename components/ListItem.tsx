@@ -11,18 +11,19 @@ interface ListItemProps {
 
 export default function ListItem({item,  onPress}: ListItemProps) {
   return (
-    <RadiusWrapper style={{backgroundColor: 'white'}}>
+    <RadiusWrapper style={{backgroundColor: 'white', paddingBottom: 10, paddingTop: 10}}>
       <TouchableOpacity
         onPress={onPress}>
-        <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
-          <View>
+        <View style={{justifyContent: 'space-between', flexDirection: 'row', flex:1}}>
+
+          <View style={{ flex:0.70}}>
             <Text style={{fontSize: 25, fontWeight: 'bold'}}>{item.city}</Text>
             <Text>{item.localtime}</Text>
             <Text style={styles.bottomLine}>{item.description}</Text>
           </View>
 
-          <View style={{alignItems: 'center', justifyContent: 'space-between'}}>
-            <Text style={{fontSize: 35}}>{item.temp}°</Text>
+          <View style={{alignItems: 'flex-end', justifyContent: 'space-between', flex: 0.30}}>
+            <Text style={{fontSize: 40}}>{item.temp}°</Text>
             <View style={styles.bottomLine}>
               <Text>
                 L:{item.temp_min}° H:{item.temp_max}°

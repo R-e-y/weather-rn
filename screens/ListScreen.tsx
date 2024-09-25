@@ -26,10 +26,10 @@ export default function ListScreen() {
 
   const {data: weather, isLoading, error} = useFetchWeather(cityToAdd, 1);
 
-  
   useEffect(() => {
     if (weather) {
       setWeatherList(prev => [...prev, weather]);
+      setFilterText('');
     }
   }, [weather]);
 
@@ -59,14 +59,6 @@ export default function ListScreen() {
     setData(filteredData);
   }
 
-  // if (isLoading) {
-  //   return (
-  //     <View style={{flex: 1, justifyContent: 'center'}}>
-  //       <ActivityIndicator size="large" />
-  //     </View>
-  //   );
-  // }
-
   if (isOpen) {
     return <DetailScreen onPress={handleCloseDetails} city={selectedCity} />;
   } else {
@@ -80,6 +72,13 @@ export default function ListScreen() {
         />
 
         <View style={{flex: 1}}>
+          {isLoading ? (
+            <View style={styles.loading}>
+              <ActivityIndicator size="large" />
+              {/* <Text>PRIVET</Text> */}
+            </View>
+          ) : null}
+
           {filterText ? (
             <View style={styles.list}>
               <FlatList
@@ -113,8 +112,15 @@ export default function ListScreen() {
 }
 
 const styles = StyleSheet.create({
-  search: {
-    position: 'relative',
+  loading: {
+    // flex: 1,
+    top : 0, left : 0, right : 0, bottom : 0,
+    position: 'absolute',
+    zIndex: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // backgroundColor: 'rgba(52, 52, 52, 0.8)',
+    // borderWidth: 1,
   },
 
   list: {
