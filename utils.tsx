@@ -1,21 +1,3 @@
-// export async  function fetchWeather(apiKey: string, city: string, days: number) {
-//     const url = `https://api.weatherapi.com/v1/forecast.json?days=${days.toString()}&key=${apiKey}&q=${city}&aqi=no&alerts=no`;
-
-//     // handle loading
-
-//     try {
-//       const response = await fetch(url);
-//       if (!response.ok) {
-//         throw new Error('Could not fetch the data for that resource');
-//       }
-//       const data = await response.json();
-//       return data;
-//     } catch (error: any) {
-//       console.error(error);
-//       return null;
-//     }
-//   }
-
 import {Weather, Forecast} from './types/Weather';
 export function createWeather(weatherData: any, hasForecast: boolean): Weather {
   const newWeather: Weather = {
@@ -59,7 +41,6 @@ export function createWeather(weatherData: any, hasForecast: boolean): Weather {
       rain_prob: hour.chance_of_rain,
       icon: `https:${hour.condition.icon}`,
     }));
-
 
     newWeather.hourlyForecast = setTwilight(
       weatherData.location.localtime,
@@ -112,59 +93,66 @@ function setTwilight(
   datetime: string,
   forecast: Forecast[],
   sunriseToday: string,
-  sunsetToday: string ,
+  sunsetToday: string,
   sunriseTomorrow: string,
   sunsetTomorrow: string,
 ) {
+  const today = datetime.split(' ')[0];
+  const now = new Date().getTime();
 
-  const today = datetime.split(" ")[0]
-  const now = new Date().getTime()
-
-  let twilight1: Forecast
-  let twilight2: Forecast
+  let twilight1: Forecast;
+  let twilight2: Forecast;
 
   sunriseToday = convertTime12to24(sunriseToday);
   sunsetToday = convertTime12to24(sunsetToday);
   sunriseTomorrow = convertTime12to24(sunriseTomorrow);
   sunsetTomorrow = convertTime12to24(sunsetTomorrow);
 
-  const sunriseTime = new Date(`${today}T${sunriseToday}`).getTime()
-  const sunsetTime = new Date(`${today}T${sunriseToday}`).getTime()
+  const sunriseTime = new Date(`${today}T${sunriseToday}`).getTime();
+  const sunsetTime = new Date(`${today}T${sunriseToday}`).getTime();
 
-  if (now < sunriseTime){
-    twilight1 = createForecast('Sunrise', sunriseToday)
-    twilight2 = createForecast('Sunset', sunsetToday)
-  }else if(now < sunsetTime){
-    twilight1 = createForecast('Sunrise', sunriseTomorrow)
-    twilight2 = createForecast('Sunset', sunsetToday)
-  }else{
-    twilight1 = createForecast('Sunrise', sunriseTomorrow)
-    twilight2 = createForecast('Sunset', sunsetTomorrow)
+  if (now < sunriseTime) {
+    twilight1 = createForecast('Sunrise', sunriseToday);
+    twilight2 = createForecast('Sunset', sunsetToday);
+  } else if (now < sunsetTime) {
+    twilight1 = createForecast('Sunrise', sunriseTomorrow);
+    twilight2 = createForecast('Sunset', sunsetToday);
+  } else {
+    twilight1 = createForecast('Sunrise', sunriseTomorrow);
+    twilight2 = createForecast('Sunset', sunsetTomorrow);
   }
 
-  const twilight1Hour = forecast.find(hour => hour.datetime === twilight1.datetime.split(":")[0])
-  const twilight2Hour = forecast.find(hour => hour.datetime === twilight2.datetime.split(":")[0])
+  const twilight1Hour = forecast.find(
+    hour => hour.datetime === twilight1.datetime.split(':')[0],
+  );
+  const twilight2Hour = forecast.find(
+    hour => hour.datetime === twilight2.datetime.split(':')[0],
+  );
 
-  twilight1Hour ? forecast.splice(forecast.indexOf(twilight1Hour) +1, 0, twilight1) : null
-  twilight2Hour ? forecast.splice(forecast.indexOf(twilight2Hour) +1, 0, twilight2) : null
- 
+  twilight1Hour
+    ? forecast.splice(forecast.indexOf(twilight1Hour) + 1, 0, twilight1)
+    : null;
+  twilight2Hour
+    ? forecast.splice(forecast.indexOf(twilight2Hour) + 1, 0, twilight2)
+    : null;
+
   return forecast;
 }
 
-function createForecast(title: string, time: string){
-  let icon: string
-  title === 'Sunrise' 
-  ? icon = 'file:///Users/sd-005/new_rn_project/icons/sunrise.png' 
-  : icon = 'file:///Users/sd-005/new_rn_project/icons/sunset.png'
+function createForecast(title: string, time: string) {
+  let icon: string;
+  title === 'Sunrise'
+    ? (icon = 'file:///Users/sd-005/new_rn_project/icons/sunrise.png')
+    : (icon = 'file:///Users/sd-005/new_rn_project/icons/sunset.png');
 
   const newForecast: Forecast = {
     datetime: time,
     temp: title,
     rain_prob: 0,
-    icon: icon
-  }
+    icon: icon,
+  };
 
-  return newForecast
+  return newForecast;
 }
 
 function convertTime12to24(time12h: string) {
@@ -178,3 +166,27 @@ function convertTime12to24(time12h: string) {
 
   return `${hours}:${minutes}`;
 }
+
+
+import { WeatherColors } from './components/WeatherColorsContext';
+export function getWeatherColors(description: string) : WeatherColors {
+  description = description.toLowerCase()
+
+  const weatherColors = [
+    {description: 'sunny', main: '#F4C671', minor: '#FDF584'},//
+    {description: 'clear', main: '#789DD4', minor: '#FFFFFF'},//
+    {description: 'partly cloudy', main: '#D5D5D5', minor: '#FFFFFF'},//
+    {description: 'cloudy', main: '#A7BDD3', minor: '#D5D5D5'},
+    {description: 'overcast', main: '#A7BDD3', minor: '#D5D5D5'},
+    {description: 'mist', main: '#D1D2D3', minor: '#CCE3ED'},
+    {description: 'fog', main: '#D1D2D3', minor: '#CCE3ED'},
+    {description: 'moderate rain', main: '#75A4E1', minor: '#E6E7E8'},
+  ];
+
+  const color = weatherColors.find(weather => weather.description === description)
+
+  return color 
+  ? {main: color.main, minor: color.minor}
+  : {main: '#DFE1E6', minor: '#FFFFFF'}
+}
+ // #F3F3F3 tranparent white

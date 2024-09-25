@@ -1,17 +1,18 @@
 import React from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, StyleProp, ViewStyle} from 'react-native';
 
 import {Weather} from '../types/Weather';
 import RadiusWrapper from './DetailWrapper';
 
 interface ListItemProps {
+  style: StyleProp<ViewStyle>;
   item: Weather;
   onPress: () => void;
 }
 
-export default function ListItem({item,  onPress}: ListItemProps) {
+export default function ListItem({style, item, onPress}: ListItemProps) {
   return (
-    <RadiusWrapper style={{backgroundColor: 'white', paddingBottom: 10, paddingTop: 10}}>
+    <RadiusWrapper style={[style, styles.container]}>
       <TouchableOpacity
         onPress={onPress}>
         <View style={{justifyContent: 'space-between', flexDirection: 'row', flex:1}}>
@@ -42,4 +43,9 @@ const styles = StyleSheet.create({
   bottomLine: {
     marginTop: 20,
   },
+  container:{
+    paddingBottom: 10,
+     paddingTop: 10
+  }
+
 });

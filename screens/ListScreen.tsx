@@ -13,6 +13,7 @@ import DetailScreen from './DetailScreen';
 import {Weather} from '../types/Weather';
 import Header from '../components/Header';
 import useFetchWeather from '../useFetchWeather';
+import { getWeatherColors } from '../utils';
 
 const cities = require('../CITIES.json');
 
@@ -59,8 +60,9 @@ export default function ListScreen() {
     setData(filteredData);
   }
 
-  if (isOpen) {
-    return <DetailScreen onPress={handleCloseDetails} city={selectedCity} />;
+  if (isOpen && weather) {
+    // return <DetailScreen onPress={handleCloseDetails} city={selectedCity} />;
+    return <DetailScreen onPress={handleCloseDetails} city={selectedCity}/>;
   } else {
     return (
       <View style={{flex: 1}}>
@@ -98,7 +100,9 @@ export default function ListScreen() {
             <FlatList
               data={weatherList}
               renderItem={({item}) => (
+                
                 <ListItem
+                style={{backgroundColor: getWeatherColors(item.description).main}}
                   item={item}
                   onPress={() => handleOpenDetails(item.city)}
                 />
@@ -119,6 +123,7 @@ const styles = StyleSheet.create({
     zIndex: 3,
     alignItems: 'center',
     justifyContent: 'center',
+    
     // backgroundColor: 'rgba(52, 52, 52, 0.8)',
     // borderWidth: 1,
   },

@@ -1,14 +1,14 @@
 import {ReactNode} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text, StyleProp, ViewStyle} from 'react-native';
 
 interface Props {
   children?: ReactNode;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
   childrenStyle?: any;
   title?: string;
 }
 
-export default function RadiusWrapper({children, ...props}: Props) {
+export default function DetailWrapper({children, ...props}: Props) {
   return (
     <View style={[styles.container, props.style]}>
       
@@ -32,7 +32,8 @@ const styles = StyleSheet.create({
     margin: 5,
     paddingBottom: 5,
     paddingTop: 5,
-    backgroundColor: 'lightgrey',
+    // backgroundColor: 'lightgrey',
+    
     // borderWidth:1
     // backgroundColor: '#d3d3d3',
   },

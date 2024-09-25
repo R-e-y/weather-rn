@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   PermissionsAndroid,
   Platform,
@@ -14,10 +14,12 @@ import {
 } from 'react-native';
 
 import {Weather, Forecast} from '../types/Weather';
-import {getWeekday} from '../utils';
-import RadiusWrapper from '../components/DetailWrapper';
-import useFetchWeather from '../useFetchWeather';
+import {getWeekday, getWeatherColors} from '../utils';
 import DetailWrapper from '../components/DetailWrapper';
+import useFetchWeather from '../useFetchWeather';
+import WeatherColorsContext from '../components/WeatherColorsContext';
+// import {useWeatherColors, WeatherColorsProvider} from '../components/WeatherColorsContext';
+
 
 interface DetailScreenProps {
   city: string;
@@ -32,8 +34,15 @@ interface ForecastProps {
   forecast: Forecast[];
 }
 
+
+
+
 export default function DetailScreen({city, onPress}: DetailScreenProps) {
   const {data: weather, isLoading, error} = useFetchWeather(city, 10);
+
+  
+  // console.log('111111111', weatherColors, typeof(weatherColors)) /////////////////////////////
+
 
   if (error) {
     console.error(error);
@@ -49,24 +58,29 @@ export default function DetailScreen({city, onPress}: DetailScreenProps) {
   }
 
   if (weather) {
+    const weatherColors = getWeatherColors(weather.description)
+
     return (
-      <View style={styles.screenContainer}>
-        <CurrentInfo weather={weather} />
-
-        <View style={styles.scrollWrapper}>
-          <ScrollView>
-            <HourlyForecast forecast={weather.hourlyForecast} />
-
-            <DailyForecast forecast={weather.dailyForecast} />
-
-            <GeneralInfo weather={weather} />
-          </ScrollView>
+      <WeatherColorsContext.Provider value={weatherColors}>
+        <View style={[styles.screenContainer, {backgroundColor: weatherColors.main}]}>
+          <CurrentInfo weather={weather} />
+  
+          <View style={styles.scrollWrapper}>
+            <ScrollView>
+              <HourlyForecast forecast={weather.hourlyForecast} />
+  
+              <DailyForecast forecast={weather.dailyForecast} />
+  
+              <GeneralInfo weather={weather} />
+            </ScrollView>
+          </View>
+  
+          <Button onPress={onPress} title="Back" />
         </View>
-
-        <Button onPress={onPress} title="Back" />
-      </View>
+      </WeatherColorsContext.Provider>
     );
-  } else {
+  } 
+  else {
     return (
       <View>
         <Text>Add more weather details</Text>
@@ -90,9 +104,12 @@ function CurrentInfo({weather}: WeatherProps) {
 }
 
 function HourlyForecast({forecast}: ForecastProps) {
+  const weatherColors = useContext(WeatherColorsContext)
+
+  // console.log( weatherColors, typeof(weatherColors)) /////////////////////////////
   return (
-    <RadiusWrapper
-      style={styles.wrapper}
+    <DetailWrapper
+      style={[styles.wrapper, {backgroundColor: weatherColors?.minor}]}
       childrenStyle={{paddingLeft: 0, paddingRight: 0}}
       title={'HOURLY FORECAST'}>
       <FlatList
@@ -114,13 +131,14 @@ function HourlyForecast({forecast}: ForecastProps) {
           </View>
         )}
       />
-    </RadiusWrapper>
+    </DetailWrapper>
   );
 }
 
 function DailyForecast({forecast}: ForecastProps) {
+  const weatherColors = useContext(WeatherColorsContext)
   return (
-    <RadiusWrapper style={styles.wrapper} title={'10-DAY FORECAST'}>
+    <DetailWrapper style={[styles.wrapper, {backgroundColor: weatherColors?.minor}]} title={'10-DAY FORECAST'}>
       <FlatList
         scrollEnabled={false}
         data={forecast}
@@ -143,34 +161,35 @@ function DailyForecast({forecast}: ForecastProps) {
           </View>
         )}
       />
-    </RadiusWrapper>
+    </DetailWrapper>
   );
 }
 
 function GeneralInfo({weather}: WeatherProps) {
+  const weatherColors = useContext(WeatherColorsContext)
   return (
-    <View style={styles.generalContainer}>
+    <View>
       <View style={{flex: 1, flexDirection: 'row'}}>
-        <DetailWrapper style={styles.wrapperSquare} title="FEELS LIKE">
-          <Text>{weather.feels_like}</Text>
+        <DetailWrapper style={[styles.wrapperSquare, {backgroundColor: weatherColors?.minor}]} title="FEELS LIKE">
+          <Text style={styles.generalText}>{weather.feels_like}°</Text>
         </DetailWrapper>
 
-        <DetailWrapper style={styles.wrapperSquare} title="PRESSURE">
-          <Text>{weather.pressure}</Text>
+        <DetailWrapper style={[styles.wrapperSquare, {backgroundColor: weatherColors?.minor}]} title="PRESSURE">
+          <Text style={styles.generalText}>{weather.pressure} hPa</Text>
         </DetailWrapper>
       </View>
 
       <View style={{flex: 1, flexDirection: 'row'}}>
-        <DetailWrapper style={styles.wrapperSquare} title="HUMIDITY">
-          <Text>{weather.humidity}</Text>
+        <DetailWrapper style={[styles.wrapperSquare, {backgroundColor: weatherColors?.minor}]} title="HUMIDITY">
+          <Text style={styles.generalText}>{weather.humidity}%</Text>
         </DetailWrapper>
 
-        <DetailWrapper style={styles.wrapperSquare} title="VISIBILITY">
-          <Text>{weather.visibility}</Text>
+        <DetailWrapper style={[styles.wrapperSquare, {backgroundColor: weatherColors?.minor}]} title="VISIBILITY">
+          <Text style={styles.generalText}>{weather.visibility} km</Text>
         </DetailWrapper>
       </View>
 
-      <DetailWrapper style={styles.wrapper} title="TWILIGHT">
+      <DetailWrapper style={[styles.wrapper, {backgroundColor: weatherColors?.minor}]} title="TWILIGHT">
         <Text>{weather.sunrise}</Text>
         <Text>{weather.sunset}</Text>
       </DetailWrapper>
@@ -242,19 +261,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
-  generalContainer: {
-    // flex: 0.3,
-    // borderWidth: 1,
-    // margin:10
+  generalText: {
+    // fontWeight: 'bold',
+    fontSize: 35,
   },
 
   wrapper: {
-    backgroundColor: 'lightblue',
+    // backgroundColor: 'lightblue',
     minHeight: 170,
   },
 
   wrapperSquare: {
-    backgroundColor: 'lightblue',
+    // backgroundColor: 'lightblue',
     height: 170,
     width: 170,
   },
