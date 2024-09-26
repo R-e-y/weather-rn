@@ -167,26 +167,27 @@ function convertTime12to24(time12h: string) {
   return `${hours}:${minutes}`;
 }
 
-
-import { WeatherColors } from './components/WeatherColorsContext';
-export function getWeatherColors(description: string) : WeatherColors {
-  description = description.toLowerCase()
+import {WeatherColors} from './components/WeatherColorsContext';
+export function getWeatherColors(description: string): WeatherColors {
+  description = description.toLowerCase();
 
   const weatherColors = [
-    {description: 'sunny', main: '#F4C671', minor: '#FDF584'},//
-    {description: 'clear', main: '#789DD4', minor: '#FFFFFF'},//
-    {description: 'partly cloudy', main: '#D5D5D5', minor: '#FFFFFF'},//
+    {description: 'sunny', main: '#F4C671', minor: '#FDF584'},
+    {description: 'clear', main: '#789DD4', minor: '#FFFFFF'},
+    {description: 'partly cloudy', main: '#D5D5D5', minor: '#FFFFFF'},
     {description: 'cloudy', main: '#A7BDD3', minor: '#D5D5D5'},
     {description: 'overcast', main: '#A7BDD3', minor: '#D5D5D5'},
     {description: 'mist', main: '#D1D2D3', minor: '#CCE3ED'},
     {description: 'fog', main: '#D1D2D3', minor: '#CCE3ED'},
-    {description: 'moderate rain', main: '#75A4E1', minor: '#E6E7E8'},
+    {description: 'moderate rain', main: '#789DD4', minor: '#A7BDD3'}, //main #75A4E1
   ];
 
-  const color = weatherColors.find(weather => weather.description === description)
+  const color = weatherColors.find(
+    weather => weather.description === description,
+  );
 
-  return color 
-  ? {main: color.main, minor: color.minor}
-  : {main: '#DFE1E6', minor: '#FFFFFF'}
+  return color
+    ? {main: color.main, minor: color.minor}
+    : {main: '#DFE1E6', minor: '#FFFFFF'};
 }
- // #F3F3F3 tranparent white
+// #F3F3F3 transparent default

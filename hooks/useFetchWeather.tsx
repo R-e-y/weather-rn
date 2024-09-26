@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
-import {Weather} from './types/Weather';
-import {createWeather} from './utils';
+import {Weather} from '../types/Weather';
+import {createWeather} from '../utils';
 
 const useFetchWeather = (city: string, days: number) => {
   const [data, setData] = useState<Weather>();

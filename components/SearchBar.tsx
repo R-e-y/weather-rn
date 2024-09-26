@@ -13,29 +13,23 @@ export default function SearchBar({
   handleFilterTextChange,
 }: SearchBarProps) {
   return (
-    // <RadiusWrapper>  
-      <View style={styles.container}>
-        <TextInput
-          value={filterText}
-          placeholder="Search for a city"
-          onChangeText={filterText => handleFilterTextChange(filterText)}
-          clearButtonMode="always"
-          autoCorrect={false}
-        />
-      </View>
-    // </RadiusWrapper>
-   
+    <View style={styles.container}>
+      <TextInput
+        value={filterText}
+        placeholder="Search for a city"
+        onChangeText={filterText => handleFilterTextChange(filterText)}
+        clearButtonMode="always"
+        autoCorrect={false}
+      />
+    </View>
   );
 }
 
-const styles= StyleSheet.create({
-  container:{
+const styles = StyleSheet.create({
+  container: {
     margin: 5,
     padding: 10,
     borderRadius: 15,
-    backgroundColor: '#DFE1E7'
-  }
-}
-  
-)
-
+    backgroundColor: '#DFE1E7',
+  },
+});

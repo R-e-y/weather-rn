@@ -1,29 +1,31 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import {
   PermissionsAndroid,
   Platform,
   View,
   Text,
-  Pressable,
-  Button,
   StyleSheet,
   Image,
   FlatList,
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
+import {RouteProp} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {Weather, Forecast} from '../types/Weather';
 import {getWeekday, getWeatherColors} from '../utils';
 import DetailWrapper from '../components/DetailWrapper';
-import useFetchWeather from '../useFetchWeather';
+import useFetchWeather from '../hooks/useFetchWeather';
 import WeatherColorsContext from '../components/WeatherColorsContext';
+import {RootStackParamList} from '../App';
 // import {useWeatherColors, WeatherColorsProvider} from '../components/WeatherColorsContext';
 
+type DetailScreenRouteProp = RouteProp<RootStackParamList>;
 
 interface DetailScreenProps {
-  city: string;
-  onPress: () => void;
+  route: DetailScreenRouteProp;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Details'>;
 }
 
 interface WeatherProps {
@@ -34,15 +36,9 @@ interface ForecastProps {
   forecast: Forecast[];
 }
 
-
-
-
-export default function DetailScreen({city, onPress}: DetailScreenProps) {
+export default function DetailScreen({route}: DetailScreenProps) {
+  const {city} = route.params!;
   const {data: weather, isLoading, error} = useFetchWeather(city, 10);
-
-  
-  // console.log('111111111', weatherColors, typeof(weatherColors)) /////////////////////////////
-
 
   if (error) {
     console.error(error);
@@ -58,29 +54,30 @@ export default function DetailScreen({city, onPress}: DetailScreenProps) {
   }
 
   if (weather) {
-    const weatherColors = getWeatherColors(weather.description)
+    const weatherColors = getWeatherColors(weather.description);
 
     return (
       <WeatherColorsContext.Provider value={weatherColors}>
-        <View style={[styles.screenContainer, {backgroundColor: weatherColors.main}]}>
+        <View
+          style={[
+            styles.screenContainer,
+            {backgroundColor: weatherColors.main},
+          ]}>
           <CurrentInfo weather={weather} />
-  
+
           <View style={styles.scrollWrapper}>
             <ScrollView>
               <HourlyForecast forecast={weather.hourlyForecast} />
-  
+
               <DailyForecast forecast={weather.dailyForecast} />
-  
+
               <GeneralInfo weather={weather} />
             </ScrollView>
           </View>
-  
-          <Button onPress={onPress} title="Back" />
         </View>
       </WeatherColorsContext.Provider>
     );
-  } 
-  else {
+  } else {
     return (
       <View>
         <Text>Add more weather details</Text>
@@ -104,9 +101,7 @@ function CurrentInfo({weather}: WeatherProps) {
 }
 
 function HourlyForecast({forecast}: ForecastProps) {
-  const weatherColors = useContext(WeatherColorsContext)
-
-  // console.log( weatherColors, typeof(weatherColors)) /////////////////////////////
+  const weatherColors = useContext(WeatherColorsContext);
   return (
     <DetailWrapper
       style={[styles.wrapper, {backgroundColor: weatherColors?.minor}]}
@@ -127,7 +122,9 @@ function HourlyForecast({forecast}: ForecastProps) {
                 <Text style={styles.rainProb}>{item.rain_prob}%</Text>
               ) : null}
             </View>
-            <Text>{typeof(item.temp) === 'string' ?  `${item.temp}` : `${item.temp}°`}</Text>
+            <Text>
+              {typeof item.temp === 'string' ? `${item.temp}` : `${item.temp}°`}
+            </Text>
           </View>
         )}
       />
@@ -136,9 +133,11 @@ function HourlyForecast({forecast}: ForecastProps) {
 }
 
 function DailyForecast({forecast}: ForecastProps) {
-  const weatherColors = useContext(WeatherColorsContext)
+  const weatherColors = useContext(WeatherColorsContext);
   return (
-    <DetailWrapper style={[styles.wrapper, {backgroundColor: weatherColors?.minor}]} title={'10-DAY FORECAST'}>
+    <DetailWrapper
+      style={[styles.wrapper, {backgroundColor: weatherColors?.minor}]}
+      title={'10-DAY FORECAST'}>
       <FlatList
         scrollEnabled={false}
         data={forecast}
@@ -166,30 +165,52 @@ function DailyForecast({forecast}: ForecastProps) {
 }
 
 function GeneralInfo({weather}: WeatherProps) {
-  const weatherColors = useContext(WeatherColorsContext)
+  const weatherColors = useContext(WeatherColorsContext);
   return (
     <View>
       <View style={{flex: 1, flexDirection: 'row'}}>
-        <DetailWrapper style={[styles.wrapperSquare, {backgroundColor: weatherColors?.minor}]} title="FEELS LIKE">
+        <DetailWrapper
+          style={[
+            styles.wrapperSquare,
+            {backgroundColor: weatherColors?.minor},
+          ]}
+          title="FEELS LIKE">
           <Text style={styles.generalText}>{weather.feels_like}°</Text>
         </DetailWrapper>
 
-        <DetailWrapper style={[styles.wrapperSquare, {backgroundColor: weatherColors?.minor}]} title="PRESSURE">
+        <DetailWrapper
+          style={[
+            styles.wrapperSquare,
+            {backgroundColor: weatherColors?.minor},
+          ]}
+          title="PRESSURE">
           <Text style={styles.generalText}>{weather.pressure} hPa</Text>
         </DetailWrapper>
       </View>
 
       <View style={{flex: 1, flexDirection: 'row'}}>
-        <DetailWrapper style={[styles.wrapperSquare, {backgroundColor: weatherColors?.minor}]} title="HUMIDITY">
+        <DetailWrapper
+          style={[
+            styles.wrapperSquare,
+            {backgroundColor: weatherColors?.minor},
+          ]}
+          title="HUMIDITY">
           <Text style={styles.generalText}>{weather.humidity}%</Text>
         </DetailWrapper>
 
-        <DetailWrapper style={[styles.wrapperSquare, {backgroundColor: weatherColors?.minor}]} title="VISIBILITY">
+        <DetailWrapper
+          style={[
+            styles.wrapperSquare,
+            {backgroundColor: weatherColors?.minor},
+          ]}
+          title="VISIBILITY">
           <Text style={styles.generalText}>{weather.visibility} km</Text>
         </DetailWrapper>
       </View>
 
-      <DetailWrapper style={[styles.wrapper, {backgroundColor: weatherColors?.minor}]} title="TWILIGHT">
+      <DetailWrapper
+        style={[styles.wrapper, {backgroundColor: weatherColors?.minor}]}
+        title="TWILIGHT">
         <Text>{weather.sunrise}</Text>
         <Text>{weather.sunset}</Text>
       </DetailWrapper>

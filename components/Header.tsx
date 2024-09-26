@@ -1,9 +1,8 @@
 import {StyleSheet, Text, View} from 'react-native';
 
 interface Props {
-    title: string;
-  }
-  
+  title: string;
+}
 
 export default function Header({title}: Props) {
   return (
@@ -14,10 +13,10 @@ export default function Header({title}: Props) {
 }
 
 const styles = StyleSheet.create({
-    text:{
-        fontSize:30,
-        fontWeight: 'bold',
-        paddingLeft: 10,
-        paddingTop: 10,
-    }
-})
+  text: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    paddingLeft: 10,
+    paddingTop: 10,
+  },
+});

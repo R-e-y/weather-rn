@@ -11,10 +11,8 @@ interface Props {
 export default function DetailWrapper({children, ...props}: Props) {
   return (
     <View style={[styles.container, props.style]}>
-      
       {props.title ? (
-        <View
-          style={styles.titleText}>
+        <View style={styles.titleText}>
           <Text style={{color: 'grey'}}>{props.title}</Text>
         </View>
       ) : null}
@@ -33,12 +31,12 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     paddingTop: 5,
     // backgroundColor: 'lightgrey',
-    
+
     // borderWidth:1
     // backgroundColor: '#d3d3d3',
   },
 
-  titleText:{
+  titleText: {
     paddingLeft: 15,
     paddingRight: 15,
     paddingTop: 5,
@@ -46,7 +44,7 @@ const styles = StyleSheet.create({
   },
 
   children: {
-    flex:1,
+    flex: 1,
     paddingLeft: 15,
     paddingRight: 15,
     // borderWidth:1
