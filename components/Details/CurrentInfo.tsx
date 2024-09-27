@@ -7,8 +7,8 @@ interface CurrentInfoProps {
 }
 
 export default function CurrentInfo({weather, ...props}: CurrentInfoProps) {
-  const Max_Height = 300;
-  const Min_Height = 100;
+  const Max_Height = 280;
+  const Min_Height = 80;
   const Scroll_Distance = Max_Height - Min_Height;
 
   const animatedContainerHeight = props.value.interpolate({
@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 20,
+    marginBottom: 5
   },
 
   cont: {

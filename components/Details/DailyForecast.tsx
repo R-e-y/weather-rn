@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { ForecastProps } from "../../types/Weather";
-import WeatherColorsContext from "../WeatherColorsContext";
+import WeatherColorsContext from "../../hooks/WeatherColorsContext";
 import DetailWrapper from "./DetailWrapper";
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import { getWeekday } from "../../utils";

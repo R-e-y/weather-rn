@@ -167,7 +167,7 @@ function convertTime12to24(time12h: string) {
   return `${hours}:${minutes}`;
 }
 
-import {WeatherColors} from './components/WeatherColorsContext';
+import {WeatherColors} from './hooks/WeatherColorsContext';
 export function getWeatherColors(description: string): WeatherColors {
   description = description.toLowerCase();
 

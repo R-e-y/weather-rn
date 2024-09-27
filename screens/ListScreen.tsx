@@ -137,10 +137,11 @@ export default function ListScreen({navigation}: Props) {
         animationType="fade"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
+        // onRequestClose={() => { // seems to be necessary only for android
+        //   // Alert.alert('Modal has been closed.');
+        //   setModalVisible(!modalVisible);
+        // }}
+        >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>
@@ -266,7 +267,7 @@ const styles = StyleSheet.create({
   modalView: {
     width: '80%',
     backgroundColor: 'white',
-    borderRadius: 10,
+    borderRadius: 15,
     padding: 20,
     shadowColor: '#000',
     shadowOffset: {
@@ -292,7 +293,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    borderRadius: 5,
+    borderRadius: 10,
     paddingVertical: 10,
     marginHorizontal: 5,
   },

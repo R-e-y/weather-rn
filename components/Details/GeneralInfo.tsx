@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import DetailWrapper from "./DetailWrapper";
 import { WeatherProps } from "../../types/Weather";
-import WeatherColorsContext from "../WeatherColorsContext";
+import WeatherColorsContext from "../../hooks/WeatherColorsContext";
 
 
 export default function GeneralInfo({weather}: WeatherProps) {

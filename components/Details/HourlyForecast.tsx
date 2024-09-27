@@ -1,8 +1,8 @@
 import React, {useContext} from 'react';
 import DetailWrapper from './DetailWrapper';
-import WeatherColorsContext from '../WeatherColorsContext';
+import WeatherColorsContext from '../../hooks/WeatherColorsContext';
 import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
-import {Forecast, ForecastProps} from '../../types/Weather';
+import {ForecastProps} from '../../types/Weather';
 
 
 export default function HourlyForecast({forecast}: ForecastProps) {

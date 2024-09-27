@@ -13,7 +13,7 @@ import {RouteProp} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {getWeatherColors} from '../utils';
 import useFetchWeather from '../hooks/useFetchWeather';
-import WeatherColorsContext from '../components/WeatherColorsContext';
+import WeatherColorsContext from '../hooks/WeatherColorsContext';
 import {RootStackParamList} from '../App';
 import CurrentInfo from '../components/Details/CurrentInfo';
 import HourlyForecast from '../components/Details/HourlyForecast';
