@@ -59,6 +59,7 @@ export default function DetailScreen({route}: DetailScreenProps) {
           <CurrentInfo weather={weather} value={scrollOffsetY} />
             <ScrollView
               scrollEventThrottle={5}
+              showsVerticalScrollIndicator={false}
               onScroll={Animated.event(
                 [{nativeEvent: {contentOffset: {y: scrollOffsetY}}}],
                 {useNativeDriver: false},

@@ -15,6 +15,7 @@ export default function HourlyForecast({forecast}: ForecastProps) {
       <FlatList
         data={forecast}
         horizontal={true}
+        showsHorizontalScrollIndicator={false}
         renderItem={({item}) => (
           <View style={styles.hourItem}>
             <Text>{item.datetime}</Text>

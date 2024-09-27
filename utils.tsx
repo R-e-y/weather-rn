@@ -169,11 +169,10 @@ function convertTime12to24(time12h: string) {
 
 import {WeatherColors} from './hooks/WeatherColorsContext';
 export function getWeatherColors(description: string): WeatherColors {
-  description = description.toLowerCase();
 
   const weatherColors = [
     { description: 'sunny', main: '#FFD700', minor: '#FFE066' },  
-    { description: 'clear', main: '#87CEFA', minor: '#FFFFFF' },                    
+    { description: 'clear', main: '#4A90E2', minor: '#A9A9E0' },                    
     { description: 'partly cloudy', main: '#B0C4DE', minor: '#F0F8FF' },             
     { description: 'cloudy', main: '#A9A9A9', minor: '#D3D3D3' },                    
     { description: 'overcast', main: '#778899', minor: '#C0C0C0' },                  
@@ -225,7 +224,7 @@ export function getWeatherColors(description: string): WeatherColors {
   
 
   const color = weatherColors.find(
-    weather => weather.description === description
+    weather => weather.description === description.toLowerCase()
   );
 
   return color
