@@ -25,3 +25,11 @@ export type Forecast = {
   rain_prob: number;
   icon: string;
 };
+
+export interface ForecastProps {
+  forecast: Forecast[];
+}
+
+export interface WeatherProps {
+  weather: Weather;
+}

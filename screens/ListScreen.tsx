@@ -53,7 +53,6 @@ export default function ListScreen({navigation}: Props) {
 
   useEffect(() => {
     if (weathersToAdd) {
-      console.log('222');
       setWeatherList(prev => [...prev, ...weathersToAdd]);
       toStore ? storeCity(weathersToAdd[0].city) : null;
       setFilterText('');
@@ -64,7 +63,6 @@ export default function ListScreen({navigation}: Props) {
     try {
       const storedCities = await AsyncStorage.getItem('cityList');
       if (storedCities != null) {
-        console.log(storedCities, 'PPPPPPPPPPP');
         const cities = JSON.parse(storedCities);
 
         setCityToAdd(cities);
@@ -84,7 +82,6 @@ export default function ListScreen({navigation}: Props) {
       cities.push(city);
       const jsonValue = JSON.stringify(cities);
       await AsyncStorage.setItem('cityList', jsonValue);
-      console.log(city, 'STORED');
     } catch (error) {
       console.error(error);
     }
@@ -96,7 +93,6 @@ export default function ListScreen({navigation}: Props) {
 
   function handleSelect(city: string) {
     const cityInList = isCityInList(city, weatherList);
-    console.log('222', cityInList, city);
     !cityInList
       ? (setCityToAdd(city), setToStore(true), setForecastDaysCount(1))
       : null;

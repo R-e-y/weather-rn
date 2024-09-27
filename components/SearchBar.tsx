@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {StyleSheet, TextInput, View} from 'react-native';
-import RadiusWrapper from './DetailWrapper';
+import RadiusWrapper from './Details/DetailWrapper';
 
 interface SearchBarProps {
   filterText: string;
