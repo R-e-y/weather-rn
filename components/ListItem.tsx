@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleProp,
   ViewStyle,
+  Pressable,
 } from 'react-native';
 
 import {Weather} from '../types/Weather';
@@ -19,36 +20,40 @@ interface ListItemProps {
 
 export default function ListItem({style, item, onPress}: ListItemProps) {
   return (
-    <RadiusWrapper style={[style, styles.container]}>
-      <TouchableOpacity onPress={onPress}>
-        <View
-          style={{
-            justifyContent: 'space-between',
-            flexDirection: 'row',
-            flex: 1,
-          }}>
-          <View style={{flex: 0.7}}>
-            <Text style={{fontSize: 25, fontWeight: 'bold'}}>{item.city}</Text>
-            <Text>{item.localtime}</Text>
-            <Text style={styles.bottomLine}>{item.description}</Text>
-          </View>
-
-          <View
-            style={{
-              alignItems: 'flex-end',
-              justifyContent: 'space-between',
-              flex: 0.3,
-            }}>
-            <Text style={{fontSize: 40}}>{item.temp}°</Text>
-            <View style={styles.bottomLine}>
-              <Text>
-                L:{item.temp_min}° H:{item.temp_max}°
-              </Text>
+    <View>
+      <RadiusWrapper style={[style, styles.container]}>
+        <TouchableOpacity onPress={onPress}>
+          {/* <Pressable onPress={onPress}> */}
+            <View
+              style={{
+                justifyContent: 'space-between',
+                flexDirection: 'row',
+                flex: 1,
+              }}>
+              <View style={{flex: 0.7}}>
+                <Text style={{fontSize: 25, fontWeight: 'bold'}}>{item.city}</Text>
+                <Text>{item.localtime}</Text>
+                <Text style={styles.bottomLine}>{item.description}</Text>
+              </View>
+    
+              <View
+                style={{
+                  alignItems: 'flex-end',
+                  justifyContent: 'space-between',
+                  flex: 0.3,
+                }}>
+                <Text style={{fontSize: 40}}>{item.temp}°</Text>
+                <View style={styles.bottomLine}>
+                  <Text>
+                    L:{item.temp_min}° H:{item.temp_max}°
+                  </Text>
+                </View>
+              </View>
             </View>
-          </View>
-        </View>
-      </TouchableOpacity>
-    </RadiusWrapper>
+          {/* </Pressable> */}
+        </TouchableOpacity>
+      </RadiusWrapper>
+    </View>
   );
 }
 

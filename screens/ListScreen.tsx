@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   FlatList,
   View,
@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import ListItem from '../components/ListItem';
 import SearchBar from '../components/SearchBar';
@@ -36,15 +37,58 @@ export default function ListScreen({navigation}: Props) {
   const [cityToAdd, setCityToAdd] = useState('');
   const [weatherList, setWeatherList] = useState<Weather[]>([]);
   const [filterText, setFilterText] = useState('');
+  const [forecastDaysCount, setForecastDaysCount] = useState(1);
+  const [toStore, setToStore] = useState(false);
 
-  const {data: weather, isLoading, error} = useFetchWeather(cityToAdd, 1);
+  const {
+    data: weathersToAdd,
+    isLoading,
+    error,
+  } = useFetchWeather(cityToAdd, forecastDaysCount);
 
   useEffect(() => {
-    if (weather) {
-      setWeatherList(prev => [...prev, weather]);
+    // AsyncStorage.clear();
+    loadCities();
+  }, []);
+
+  useEffect(() => {
+    if (weathersToAdd) {
+      console.log('222');
+      setWeatherList(prev => [...prev, ...weathersToAdd]);
+      toStore ? storeCity(weathersToAdd[0].city) : null;
       setFilterText('');
     }
-  }, [weather]);
+  }, [weathersToAdd]);
+
+  const loadCities = async () => {
+    try {
+      const storedCities = await AsyncStorage.getItem('cityList');
+      if (storedCities != null) {
+        console.log(storedCities, 'PPPPPPPPPPP');
+        const cities = JSON.parse(storedCities);
+
+        setCityToAdd(cities);
+        setToStore(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const storeCity = async (city: string) => {
+    try {
+      let cities: string[] = [];
+      const storedCities = await AsyncStorage.getItem('cityList');
+      storedCities ? (cities = JSON.parse(storedCities)) : null;
+
+      cities.push(city);
+      const jsonValue = JSON.stringify(cities);
+      await AsyncStorage.setItem('cityList', jsonValue);
+      console.log(city, 'STORED');
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   function isCityInList(city: string, arr: Weather[]) {
     return arr.some(obj => Object.values(obj).includes(city));
@@ -52,7 +96,10 @@ export default function ListScreen({navigation}: Props) {
 
   function handleSelect(city: string) {
     const cityInList = isCityInList(city, weatherList);
-    !cityInList ? setCityToAdd(city) : null;
+    console.log('222', cityInList, city);
+    !cityInList
+      ? (setCityToAdd(city), setToStore(true), setForecastDaysCount(1))
+      : null;
   }
 
   function handleFilterTextChange(filterText: string) {

@@ -2,29 +2,33 @@ import {useState, useEffect} from 'react';
 import {Weather} from '../types/Weather';
 import {createWeather} from '../utils';
 
-const useFetchWeather = (city: string, days: number) => {
-  const [data, setData] = useState<Weather>();
+const useFetchWeather = (city: string[] | string, days: number) => {
+  const [data, setData] = useState<Weather[]>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   let hasForecast = false;
 
-  const url = `https://api.weatherapi.com/v1/forecast.json?days=${days.toString()}&key=${apiKey}&q=${city}&aqi=no&alerts=no`;
-
   useEffect(() => {
     const fetchWeather = async () => {
       setIsLoading(true);
-
       try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          // error coming back from server
-          throw new Error('Could not fetch the data for that resource');
-        }
-        const result = await response.json();
-        days > 1 ? (hasForecast = true) : null;
+        const cities = Array.isArray(city) ? city : [city];
+        const weatherList: Weather[] = [];
 
-        const weather = createWeather(result, hasForecast);
-        setData(weather);
+        for (const currenCity of cities) {
+          const url = `https://api.weatherapi.com/v1/forecast.json?days=${days.toString()}&key=${apiKey}&q=${currenCity}&aqi=no&alerts=no`;
+          const response = await fetch(url);
+          if (!response.ok) {
+            // error coming back from server
+            throw new Error('Could not fetch the data for that resource');
+          }
+          const result = await response.json();
+          days > 1 ? (hasForecast = true) : null;
+          const weather = createWeather(result, hasForecast);
+          weatherList.push(weather);
+        }
+
+        setData(weatherList);
       } catch (err: any) {
         setError(err.message);
       } finally {

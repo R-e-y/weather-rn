@@ -19,13 +19,12 @@ import DetailWrapper from '../components/DetailWrapper';
 import useFetchWeather from '../hooks/useFetchWeather';
 import WeatherColorsContext from '../components/WeatherColorsContext';
 import {RootStackParamList} from '../App';
-// import {useWeatherColors, WeatherColorsProvider} from '../components/WeatherColorsContext';
 
 type DetailScreenRouteProp = RouteProp<RootStackParamList>;
 
 interface DetailScreenProps {
   route: DetailScreenRouteProp;
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Details'>;
+  // navigation: NativeStackNavigationProp<RootStackParamList, 'Details'>;
 }
 
 interface WeatherProps {
@@ -38,7 +37,8 @@ interface ForecastProps {
 
 export default function DetailScreen({route}: DetailScreenProps) {
   const {city} = route.params!;
-  const {data: weather, isLoading, error} = useFetchWeather(city, 10);
+  const {data: weatherList, isLoading, error} = useFetchWeather(city, 10);
+  const weather = weatherList ? weatherList[0] : null;
 
   if (error) {
     console.error(error);
