@@ -16,14 +16,17 @@ interface ListItemProps {
   style: StyleProp<ViewStyle>;
   item: Weather;
   onPress: () => void;
+  onLongPress: () => void;
 }
 
-export default function ListItem({style, item, onPress}: ListItemProps) {
+export default function ListItem({item, ...props}: ListItemProps) {
   return (
     <View>
-      <RadiusWrapper style={[style, styles.container]}>
-        <TouchableOpacity onPress={onPress}>
-          {/* <Pressable onPress={onPress}> */}
+      <RadiusWrapper style={[props.style, styles.container]}>
+        {/* <TouchableOpacity onPress={onPress}> */}
+
+
+          <Pressable onPress={props.onPress} onLongPress={props.onLongPress}>
             <View
               style={{
                 justifyContent: 'space-between',
@@ -50,8 +53,10 @@ export default function ListItem({style, item, onPress}: ListItemProps) {
                 </View>
               </View>
             </View>
-          {/* </Pressable> */}
-        </TouchableOpacity>
+          </Pressable>
+
+
+        {/* </TouchableOpacity> */}
       </RadiusWrapper>
     </View>
   );

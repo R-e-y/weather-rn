@@ -6,13 +6,16 @@ import {
   StyleSheet,
   ActivityIndicator,
   SafeAreaView,
+  Modal,
+  Alert,
+  Pressable,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import ListItem from '../components/ListItem';
 import SearchBar from '../components/SearchBar';
 import {Weather} from '../types/Weather';
-import Header from '../components/Header';
+import Header from '../components/Details/Header';
 import useFetchWeather from '../hooks/useFetchWeather';
 import {getWeatherColors} from '../utils';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -35,10 +38,12 @@ const cities = require('../CITIES.json');
 export default function ListScreen({navigation}: Props) {
   const [data, setData] = useState(cities);
   const [cityToAdd, setCityToAdd] = useState('');
+  const [cityToDelete, setCityToDelete] = useState('');
   const [weatherList, setWeatherList] = useState<Weather[]>([]);
   const [filterText, setFilterText] = useState('');
   const [forecastDaysCount, setForecastDaysCount] = useState(1);
   const [toStore, setToStore] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const {
     data: weathersToAdd,
@@ -87,6 +92,25 @@ export default function ListScreen({navigation}: Props) {
     }
   };
 
+  const deleteCity = async (cityToDelete: string) => {
+    try {
+      let cities: string[] = [];
+      const storedCities = await AsyncStorage.getItem('cityList');
+      storedCities ? (cities = JSON.parse(storedCities)) : null;
+      const updatedCities = cities.filter(city => city !== cityToDelete);
+      const updatedWeatherList = weatherList.filter(
+        weather => weather.city !== cityToDelete,
+      );
+
+      setWeatherList(updatedWeatherList);
+
+      const jsonValue = JSON.stringify(updatedCities);
+      await AsyncStorage.setItem('cityList', jsonValue);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   function isCityInList(city: string, arr: Weather[]) {
     return arr.some(obj => Object.values(obj).includes(city));
   }
@@ -109,6 +133,39 @@ export default function ListScreen({navigation}: Props) {
   return (
     //  <SafeAreaView>
     <View style={{flex: 1}}>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              Do you want to delete {cityToDelete}?
+            </Text>
+
+            <View style={styles.buttonContainer}>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>Cancel</Text>
+              </Pressable>
+
+              <Pressable
+                style={[styles.button, styles.buttonDelete]}
+                onPress={() => {
+                  setModalVisible(!modalVisible), deleteCity(cityToDelete);
+                }}>
+                <Text style={styles.textStyle}>Delete</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <Header title="Weather" />
 
       <SearchBar
@@ -150,6 +207,10 @@ export default function ListScreen({navigation}: Props) {
                 onPress={() =>
                   navigation.navigate('Details', {city: item.city})
                 }
+                onLongPress={() => {
+                  setModalVisible(true);
+                  setCityToDelete(item.city);
+                }}
               />
             )}
           />
@@ -194,5 +255,55 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     marginTop: 5,
     marginBottom: 10,
+  },
+
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    alignItems: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+  },
+  button: {
+    flex: 1,
+    borderRadius: 5,
+    paddingVertical: 10,
+    marginHorizontal: 5,
+  },
+  buttonClose: {
+    backgroundColor: '#ccc',
+  },
+  buttonDelete: {
+    backgroundColor: '#ff4444',
+  },
+  textStyle: {
+    color: 'white',
+    textAlign: 'center',
   },
 });
