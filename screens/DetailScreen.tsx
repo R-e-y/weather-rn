@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {
   PermissionsAndroid,
   Platform,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  Animated,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -19,7 +20,6 @@ import HourlyForecast from '../components/Details/HourlyForecast';
 import DailyForecast from '../components/Details/DailyForecast';
 import GeneralInfo from '../components/Details/GeneralInfo';
 
-
 type DetailScreenRouteProp = RouteProp<RootStackParamList>;
 interface DetailScreenProps {
   route: DetailScreenRouteProp;
@@ -28,6 +28,8 @@ interface DetailScreenProps {
 
 export default function DetailScreen({route}: DetailScreenProps) {
   const {city} = route.params!;
+
+  const scrollOffsetY = useRef(new Animated.Value(0)).current;
   const {data: weatherList, isLoading, error} = useFetchWeather(city, 10);
   const weather = weatherList ? weatherList[0] : null;
 
@@ -54,17 +56,19 @@ export default function DetailScreen({route}: DetailScreenProps) {
             styles.screenContainer,
             {backgroundColor: weatherColors.main},
           ]}>
-          <CurrentInfo weather={weather} />
-
-          <View style={styles.scrollWrapper}>
-            <ScrollView>
-              <HourlyForecast forecast={weather.hourlyForecast} />
-
-              <DailyForecast forecast={weather.dailyForecast} />
-
-              <GeneralInfo weather={weather} />
+          <CurrentInfo weather={weather} value={scrollOffsetY} />
+            <ScrollView
+              scrollEventThrottle={5}
+              onScroll={Animated.event(
+                [{nativeEvent: {contentOffset: {y: scrollOffsetY}}}],
+                {useNativeDriver: false},
+              )}>
+              <View style={styles.scrollWrapper}>
+                <HourlyForecast forecast={weather.hourlyForecast} />
+                <DailyForecast forecast={weather.dailyForecast} />
+                <GeneralInfo weather={weather} />
+              </View>
             </ScrollView>
-          </View>
         </View>
       </WeatherColorsContext.Provider>
     );
@@ -79,10 +83,11 @@ export default function DetailScreen({route}: DetailScreenProps) {
 
 const styles = StyleSheet.create({
   screenContainer: {
-    flex: 1,
+    // flex: 1,
   },
-scrollWrapper: {
-    flex: 0.7,
+  scrollWrapper: {
+    // flex: 0.7,
     padding: 15,
+    paddingBottom: 130
   },
 });
