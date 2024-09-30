@@ -1,12 +1,12 @@
 import { ForecastProps } from "../../types/Weather";
-import { useWeatherColors } from "../../hooks/WeatherColorsContext";
+import { useWeatherColors } from "../../contexts/WeatherColorsContext";
 import DetailWrapper from "./DetailWrapper";
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import { getWeekday } from "../../utils";
 
 
 export default function DailyForecast({forecast}: ForecastProps) {
-    const {main, minor} = useWeatherColors();
+  const {main, minor} = useWeatherColors();
     return (
       <DetailWrapper
         style={[styles.wrapper, {backgroundColor: minor}]}
@@ -33,7 +33,7 @@ export default function DailyForecast({forecast}: ForecastProps) {
             </View>
           )}
         />
-      </DetailWrapper>
+     </DetailWrapper>
     );
   }
 

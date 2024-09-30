@@ -1,33 +1,17 @@
 import DetailWrapper from './DetailWrapper';
-import { useWeatherColors } from '../../hooks/WeatherColorsContext';
+import {useWeatherColors} from '../../contexts/WeatherColorsContext';
 import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
-import {Forecast, ForecastProps} from '../../types/Weather';
+import {ForecastProps} from '../../types/Weather';
 
 
-interface HourlyForecastProps {
-  forecast: Forecast[];
-  value: any;
-  maxHeight: number;
-  minHeight: number;
-  scrollDistance: number
-}
-
-
-export default function HourlyForecast({forecast, ...props}: HourlyForecastProps) {
+export default function HourlyForecast({
+  forecast,
+}: ForecastProps) {
   const {main, minor} = useWeatherColors();
-
-  const translateHourlyForecast = props.value.interpolate({
-    inputRange: [0, props.scrollDistance],
-    outputRange: [0, props.scrollDistance],
-    extrapolate: 'clamp',
-  });
-
-  console.log(typeof(translateHourlyForecast), props.scrollDistance, 'HOOOOOOO')
-
   return (
     <DetailWrapper
-      style={{...styles.wrapper, backgroundColor: minor }}
-      childrenStyle={{paddingLeft: 0, paddingRight: 0}}
+      style={{...styles.wrapper, backgroundColor: minor}} 
+      styleChildren={{paddingLeft: 0, paddingRight: 0}}
       title={'HOURLY FORECAST'}>
       <FlatList
         data={forecast}
@@ -38,7 +22,9 @@ export default function HourlyForecast({forecast, ...props}: HourlyForecastProps
             <Text>{item.datetime}</Text>
             <View>
               <Image
-                source={typeof item.icon === 'string' ? {uri: item.icon}  : item.icon }
+                source={
+                  typeof item.icon === 'string' ? {uri: item.icon} : item.icon
+                }
                 style={styles.forecastIcon}></Image>
 
               {item.rain_prob ? (

@@ -18,13 +18,13 @@ export default function CurrentInfo({weather, ...props}: CurrentInfoProps) {
   });
 
   const opacity = props.value.interpolate({
-    inputRange: [0, props.scrollDistance / 2],
+    inputRange: [0, props.scrollDistance ],
     outputRange: [1, 0],
     extrapolate: 'clamp',
   });
 
   const opacityInverse = props.value.interpolate({
-    inputRange: [0, props.scrollDistance / 2],
+    inputRange: [0, props.scrollDistance ],
     outputRange: [0, 1],
     extrapolate: 'clamp',
   });

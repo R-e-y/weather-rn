@@ -5,26 +5,26 @@ import {
   Text,
   StyleProp,
   ViewStyle,
-  Animated,
 } from 'react-native';
 
 interface Props {
   children?: ReactNode;
   style?: StyleProp<ViewStyle>;
-  childrenStyle?: any;
+  styleChildren?: any;
   title?: string;
 }
 
 export default function DetailWrapper({children, ...props}: Props) {
-  return (
+return (
     <View style={[styles.container, props.style]}>
       {props.title ? (
-        <View style={styles.titleText}>
+        <View style={{...styles.titleText}}>
           <Text style={{color: 'grey'}}>{props.title}</Text>
         </View>
+
       ) : null}
 
-      <View style={[styles.children, props.childrenStyle]}>{children}</View>
+      <View style={[styles.children, props.styleChildren]}>{children}</View>
     </View>
   );
 }

@@ -19,8 +19,7 @@ import CurrentInfo from '../components/Details/CurrentInfo';
 import HourlyForecast from '../components/Details/HourlyForecast';
 import DailyForecast from '../components/Details/DailyForecast';
 import GeneralInfo from '../components/Details/GeneralInfo';
-import {WeatherColorsProvider} from '../hooks/WeatherColorsContext';
-
+import {WeatherColorsProvider} from '../contexts/WeatherColorsContext';
 
 type DetailScreenRouteProp = RouteProp<RootStackParamList>;
 interface DetailScreenProps {
@@ -31,14 +30,14 @@ interface DetailScreenProps {
 export default function DetailScreen({route}: DetailScreenProps) {
   const {city} = route.params!;
 
-  const Max_Height = 280;
-  const Min_Height = 80;
-  const Scroll_Distance = Max_Height - Min_Height;
   const scrollY = useRef(new Animated.Value(0)).current;
+  const minHeight = 80;
+  const maxHeight = 280;
+  const scrollDistance = maxHeight - minHeight;
 
   const translateContent = scrollY.interpolate({
-    inputRange: [0, Scroll_Distance],
-    outputRange: [0, Scroll_Distance],
+    inputRange: [0, scrollDistance],
+    outputRange: [0, scrollDistance],
     extrapolate: 'clamp',
   });
 
@@ -71,9 +70,9 @@ export default function DetailScreen({route}: DetailScreenProps) {
           <CurrentInfo
             weather={weather}
             value={scrollY}
-            maxHeight={Max_Height}
-            minHeight={Min_Height}
-            scrollDistance={Scroll_Distance}
+            maxHeight={maxHeight}
+            minHeight={minHeight}
+            scrollDistance={scrollDistance}
           />
           <Animated.ScrollView
             scrollEventThrottle={5}
@@ -87,13 +86,7 @@ export default function DetailScreen({route}: DetailScreenProps) {
                 ...styles.scrollWrapper,
                 transform: [{translateY: translateContent}],
               }}>
-              <HourlyForecast
-                forecast={weather.hourlyForecast}
-                value={scrollY}
-                maxHeight={Max_Height}
-                minHeight={Min_Height}
-                scrollDistance={Scroll_Distance}
-              />
+              <HourlyForecast forecast={weather.hourlyForecast} />
               <DailyForecast forecast={weather.dailyForecast} />
               <GeneralInfo weather={weather} />
             </Animated.View>
