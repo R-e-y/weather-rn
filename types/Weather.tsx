@@ -23,7 +23,7 @@ export type Forecast = {
   temp_min?: number;
   temp_max?: number;
   rain_prob: number;
-  icon: string;
+  icon: string | number;
 };
 
 export interface ForecastProps {

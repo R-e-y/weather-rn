@@ -21,7 +21,7 @@ export default function HourlyForecast({forecast}: ForecastProps) {
             <Text>{item.datetime}</Text>
             <View>
               <Image
-                source={{uri: item.icon}}
+                source={typeof item.icon === 'string' ? {uri: item.icon}  : item.icon }
                 style={styles.forecastIcon}></Image>
 
               {item.rain_prob ? (

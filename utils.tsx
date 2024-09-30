@@ -112,14 +112,14 @@ function setTwilight(
   const sunsetTime = new Date(`${today}T${sunriseToday}`).getTime();
 
   if (now < sunriseTime) {
-    twilight1 = createForecast('Sunrise', sunriseToday);
-    twilight2 = createForecast('Sunset', sunsetToday);
+    twilight1 = createTwilight('Sunrise', sunriseToday);
+    twilight2 = createTwilight('Sunset', sunsetToday);
   } else if (now < sunsetTime) {
-    twilight1 = createForecast('Sunrise', sunriseTomorrow);
-    twilight2 = createForecast('Sunset', sunsetToday);
+    twilight1 = createTwilight('Sunrise', sunriseTomorrow);
+    twilight2 = createTwilight('Sunset', sunsetToday);
   } else {
-    twilight1 = createForecast('Sunrise', sunriseTomorrow);
-    twilight2 = createForecast('Sunset', sunsetTomorrow);
+    twilight1 = createTwilight('Sunrise', sunriseTomorrow);
+    twilight2 = createTwilight('Sunset', sunsetTomorrow);
   }
 
   const twilight1Hour = forecast.find(
@@ -139,11 +139,11 @@ function setTwilight(
   return forecast;
 }
 
-function createForecast(title: string, time: string) {
-  let icon: string;
+function createTwilight(title: string, time: string) {
+  let icon: string | number;
   title === 'Sunrise'
-    ? (icon = 'file:///Users/sd-005/new_rn_project/icons/sunrise.png')
-    : (icon = 'file:///Users/sd-005/new_rn_project/icons/sunset.png');
+    ? icon = require('./icons/sunrise.png')
+    : icon = require('./icons/sunset.png')
 
   const newForecast: Forecast = {
     datetime: time,
