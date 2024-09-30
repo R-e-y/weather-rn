@@ -1,16 +1,15 @@
-import { useContext } from "react";
 import { ForecastProps } from "../../types/Weather";
-import WeatherColorsContext from "../../hooks/WeatherColorsContext";
+import { useWeatherColors } from "../../hooks/WeatherColorsContext";
 import DetailWrapper from "./DetailWrapper";
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import { getWeekday } from "../../utils";
 
 
 export default function DailyForecast({forecast}: ForecastProps) {
-    const weatherColors = useContext(WeatherColorsContext);
+    const {main, minor} = useWeatherColors();
     return (
       <DetailWrapper
-        style={[styles.wrapper, {backgroundColor: weatherColors?.minor}]}
+        style={[styles.wrapper, {backgroundColor: minor}]}
         title={'10-DAY FORECAST'}>
         <FlatList
           scrollEnabled={false}
@@ -20,7 +19,7 @@ export default function DailyForecast({forecast}: ForecastProps) {
               <Text style={styles.dayText}>{getWeekday(item.datetime)}</Text>
               <View style={{alignItems: 'center'}}>
                 <Image
-                  source={{uri: item.icon}}
+                  source={{uri: item.icon as string}} // type assertion
                   style={styles.forecastIcon}></Image>
                 {item.rain_prob ? (
                   <Text style={styles.rainProb}>{item.rain_prob}%</Text>

@@ -1,19 +1,18 @@
-import { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import DetailWrapper from "./DetailWrapper";
 import { WeatherProps } from "../../types/Weather";
-import WeatherColorsContext from "../../hooks/WeatherColorsContext";
+import { useWeatherColors } from "../../hooks/WeatherColorsContext";
 
 
 export default function GeneralInfo({weather}: WeatherProps) {
-    const weatherColors = useContext(WeatherColorsContext);
+    const {main, minor} = useWeatherColors();
     return (
       <View>
         <View style={{flex: 1, flexDirection: 'row'}}>
           <DetailWrapper
             style={[
               styles.wrapperSquare,
-              {backgroundColor: weatherColors?.minor},
+              {backgroundColor: minor},
             ]}
             title="FEELS LIKE">
             <Text style={styles.generalText}>{weather.feels_like}°</Text>
@@ -22,7 +21,7 @@ export default function GeneralInfo({weather}: WeatherProps) {
           <DetailWrapper
             style={[
               styles.wrapperSquare,
-              {backgroundColor: weatherColors?.minor},
+              {backgroundColor: minor},
             ]}
             title="PRESSURE">
             <Text style={styles.generalText}>{weather.pressure} hPa</Text>
@@ -33,7 +32,7 @@ export default function GeneralInfo({weather}: WeatherProps) {
           <DetailWrapper
             style={[
               styles.wrapperSquare,
-              {backgroundColor: weatherColors?.minor},
+              {backgroundColor: minor},
             ]}
             title="HUMIDITY">
             <Text style={styles.generalText}>{weather.humidity}%</Text>
@@ -42,7 +41,7 @@ export default function GeneralInfo({weather}: WeatherProps) {
           <DetailWrapper
             style={[
               styles.wrapperSquare,
-              {backgroundColor: weatherColors?.minor},
+              {backgroundColor: minor},
             ]}
             title="VISIBILITY">
             <Text style={styles.generalText}>{weather.visibility} km</Text>
@@ -50,7 +49,7 @@ export default function GeneralInfo({weather}: WeatherProps) {
         </View>
   
         <DetailWrapper
-          style={[styles.wrapper, {backgroundColor: weatherColors?.minor}]}
+          style={[styles.wrapper, {backgroundColor: minor}]}
           title="TWILIGHT">
           <Text>{weather.sunrise}</Text>
           <Text>{weather.sunset}</Text>

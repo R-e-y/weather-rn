@@ -13,12 +13,13 @@ import {RouteProp} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {getWeatherColors} from '../utils';
 import useFetchWeather from '../hooks/useFetchWeather';
-import WeatherColorsContext from '../hooks/WeatherColorsContext';
+// import WeatherColorsContext from '../hooks/WeatherColorsContext';
 import {RootStackParamList} from '../App';
 import CurrentInfo from '../components/Details/CurrentInfo';
 import HourlyForecast from '../components/Details/HourlyForecast';
 import DailyForecast from '../components/Details/DailyForecast';
 import GeneralInfo from '../components/Details/GeneralInfo';
+import { WeatherColorsProvider } from '../hooks/WeatherColorsContext';
 
 type DetailScreenRouteProp = RouteProp<RootStackParamList>;
 interface DetailScreenProps {
@@ -50,7 +51,7 @@ export default function DetailScreen({route}: DetailScreenProps) {
     const weatherColors = getWeatherColors(weather.description);
 
     return (
-      <WeatherColorsContext.Provider value={weatherColors}>
+      <WeatherColorsProvider value={weatherColors}>
         <View
           style={[
             styles.screenContainer,
@@ -71,7 +72,7 @@ export default function DetailScreen({route}: DetailScreenProps) {
               </View>
             </ScrollView>
         </View>
-      </WeatherColorsContext.Provider>
+      </WeatherColorsProvider>
     );
   } else {
     return (

@@ -1,15 +1,14 @@
-import React, {useContext} from 'react';
 import DetailWrapper from './DetailWrapper';
-import WeatherColorsContext from '../../hooks/WeatherColorsContext';
+import { useWeatherColors } from '../../hooks/WeatherColorsContext';
 import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
 import {ForecastProps} from '../../types/Weather';
 
 
 export default function HourlyForecast({forecast}: ForecastProps) {
-  const weatherColors = useContext(WeatherColorsContext);
+  const {main, minor} = useWeatherColors();
   return (
     <DetailWrapper
-      style={[styles.wrapper, {backgroundColor: weatherColors?.minor}]}
+      style={[styles.wrapper, {backgroundColor: minor}]}
       childrenStyle={{paddingLeft: 0, paddingRight: 0}}
       title={'HOURLY FORECAST'}>
       <FlatList
