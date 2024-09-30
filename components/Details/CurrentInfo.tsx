@@ -1,30 +1,30 @@
 import {Animated, StyleSheet, Text} from 'react-native';
 import {Weather} from '../../types/Weather';
 
+
 interface CurrentInfoProps {
   weather: Weather;
   value: any;
+  maxHeight: number;
+  minHeight: number;
+  scrollDistance: number
 }
 
 export default function CurrentInfo({weather, ...props}: CurrentInfoProps) {
-  const Max_Height = 280;
-  const Min_Height = 80;
-  const Scroll_Distance = Max_Height - Min_Height;
-
   const animatedContainerHeight = props.value.interpolate({
-    inputRange: [0, Scroll_Distance],
-    outputRange: [Max_Height, Min_Height],
+    inputRange: [0, props.scrollDistance],
+    outputRange: [props.maxHeight, props.minHeight],
     extrapolate: 'clamp',
   });
 
   const opacity = props.value.interpolate({
-    inputRange: [0, Scroll_Distance / 2],
+    inputRange: [0, props.scrollDistance / 2],
     outputRange: [1, 0],
     extrapolate: 'clamp',
   });
 
   const opacityInverse = props.value.interpolate({
-    inputRange: [0, Scroll_Distance / 2],
+    inputRange: [0, props.scrollDistance / 2],
     outputRange: [0, 1],
     extrapolate: 'clamp',
   });

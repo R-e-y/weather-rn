@@ -1,14 +1,32 @@
 import DetailWrapper from './DetailWrapper';
 import { useWeatherColors } from '../../hooks/WeatherColorsContext';
 import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
-import {ForecastProps} from '../../types/Weather';
+import {Forecast, ForecastProps} from '../../types/Weather';
 
 
-export default function HourlyForecast({forecast}: ForecastProps) {
+interface HourlyForecastProps {
+  forecast: Forecast[];
+  value: any;
+  maxHeight: number;
+  minHeight: number;
+  scrollDistance: number
+}
+
+
+export default function HourlyForecast({forecast, ...props}: HourlyForecastProps) {
   const {main, minor} = useWeatherColors();
+
+  const translateHourlyForecast = props.value.interpolate({
+    inputRange: [0, props.scrollDistance],
+    outputRange: [0, props.scrollDistance],
+    extrapolate: 'clamp',
+  });
+
+  console.log(typeof(translateHourlyForecast), props.scrollDistance, 'HOOOOOOO')
+
   return (
     <DetailWrapper
-      style={[styles.wrapper, {backgroundColor: minor}]}
+      style={{...styles.wrapper, backgroundColor: minor }}
       childrenStyle={{paddingLeft: 0, paddingRight: 0}}
       title={'HOURLY FORECAST'}>
       <FlatList

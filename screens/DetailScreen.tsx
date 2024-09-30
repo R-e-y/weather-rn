@@ -19,7 +19,8 @@ import CurrentInfo from '../components/Details/CurrentInfo';
 import HourlyForecast from '../components/Details/HourlyForecast';
 import DailyForecast from '../components/Details/DailyForecast';
 import GeneralInfo from '../components/Details/GeneralInfo';
-import { WeatherColorsProvider } from '../hooks/WeatherColorsContext';
+import {WeatherColorsProvider} from '../hooks/WeatherColorsContext';
+
 
 type DetailScreenRouteProp = RouteProp<RootStackParamList>;
 interface DetailScreenProps {
@@ -30,7 +31,17 @@ interface DetailScreenProps {
 export default function DetailScreen({route}: DetailScreenProps) {
   const {city} = route.params!;
 
-  const scrollOffsetY = useRef(new Animated.Value(0)).current;
+  const Max_Height = 280;
+  const Min_Height = 80;
+  const Scroll_Distance = Max_Height - Min_Height;
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const translateContent = scrollY.interpolate({
+    inputRange: [0, Scroll_Distance],
+    outputRange: [0, Scroll_Distance],
+    extrapolate: 'clamp',
+  });
+
   const {data: weatherList, isLoading, error} = useFetchWeather(city, 10);
   const weather = weatherList ? weatherList[0] : null;
 
@@ -57,20 +68,36 @@ export default function DetailScreen({route}: DetailScreenProps) {
             styles.screenContainer,
             {backgroundColor: weatherColors.main},
           ]}>
-          <CurrentInfo weather={weather} value={scrollOffsetY} />
-            <ScrollView
-              scrollEventThrottle={5}
-              showsVerticalScrollIndicator={false}
-              onScroll={Animated.event(
-                [{nativeEvent: {contentOffset: {y: scrollOffsetY}}}],
-                {useNativeDriver: false},
-              )}>
-              <View style={styles.scrollWrapper}>
-                <HourlyForecast forecast={weather.hourlyForecast} />
-                <DailyForecast forecast={weather.dailyForecast} />
-                <GeneralInfo weather={weather} />
-              </View>
-            </ScrollView>
+          <CurrentInfo
+            weather={weather}
+            value={scrollY}
+            maxHeight={Max_Height}
+            minHeight={Min_Height}
+            scrollDistance={Scroll_Distance}
+          />
+          <Animated.ScrollView
+            scrollEventThrottle={5}
+            showsVerticalScrollIndicator={false}
+            onScroll={Animated.event(
+              [{nativeEvent: {contentOffset: {y: scrollY}}}],
+              {useNativeDriver: false},
+            )}>
+            <Animated.View
+              style={{
+                ...styles.scrollWrapper,
+                transform: [{translateY: translateContent}],
+              }}>
+              <HourlyForecast
+                forecast={weather.hourlyForecast}
+                value={scrollY}
+                maxHeight={Max_Height}
+                minHeight={Min_Height}
+                scrollDistance={Scroll_Distance}
+              />
+              <DailyForecast forecast={weather.dailyForecast} />
+              <GeneralInfo weather={weather} />
+            </Animated.View>
+          </Animated.ScrollView>
         </View>
       </WeatherColorsProvider>
     );
@@ -90,6 +117,6 @@ const styles = StyleSheet.create({
   scrollWrapper: {
     // flex: 0.7,
     padding: 15,
-    paddingBottom: 130
+    paddingBottom: 300,
   },
 });
