@@ -1,76 +1,43 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  useColorScheme,
-} from 'react-native';
-
-import { Colors } from 'react-native/Libraries/NewAppScreen';
-
+import {SafeAreaView, StatusBar, useColorScheme} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 import ListScreen from './screens/ListScreen';
+import DetailScreen from './screens/DetailScreen';
 
+declare global {
+  var apiKey: string;
+}
+globalThis.apiKey = '16f82f59dec74ab3be8140412241809';
 
-export default function App(): JSX.Element {
+// This is the type that defines all the routes (screens) in your app and what parameters they expect
+export type RootStackParamList = {
+  Home: undefined; // undefined because I'm not passing any params to the List screen
+  Details: {city: string};
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+export default function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    flex: 1,
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
+    <NavigationContainer>
+      <Stack.Navigator>
+        {/* <StatusBar
+            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+            backgroundColor={backgroundStyle.backgroundColor}
+          /> */}
 
-      <ListScreen/>
-
-    </SafeAreaView>
+        <Stack.Screen name="Home" component={ListScreen} />
+        <Stack.Screen name="Details" component={DetailScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
-
 }
-
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-
-  
-  headerContainer: {
-    backgroundColor: '#90EE90', // Light green color
-    padding: 80,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  headerText: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#000', // Text color
-  },
-  headerCount: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-});
-

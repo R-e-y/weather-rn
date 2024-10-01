@@ -1,146 +1,310 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
-  PermissionsAndroid,
-  Platform,
   FlatList,
   View,
   Text,
+  StyleSheet,
+  ActivityIndicator,
+  SafeAreaView,
+  Modal,
+  Alert,
   Pressable,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import ListItem from '../components/ListItem';
 import SearchBar from '../components/SearchBar';
-import DetailScreen from './DetailScreen';
-import {Weather} from '../models/Weather';
-import createWeather from '../models/Weather';
+import {Weather} from '../types/Weather';
+import Header from '../components/Header';
+import useFetchWeather from '../hooks/useFetchWeather';
+import {getWeatherColors} from '../utils';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../App';
 
-import useFetchWeather from '../useFetchWeather';
+type DetailScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Home'
+  //refers to a specific route name defined in your RootStackParamList type.
+  //It's telling TypeScript that the navigation prop (DetailScreenNavigationProp)
+  //is typed specifically for the 'Home' screen in your navigation stack.
+>;
 
-var CITIES = require('../CITIES.json');
+type Props = {
+  navigation: DetailScreenNavigationProp;
+};
 
-export async function fetchWeather(apiKey: string, city: string, days: number) {
-  //const [data, setData] = useState(null);
-  const url = `https://api.weatherapi.com/v1/forecast.json?days=${days.toString()}&key=${apiKey}&q=${city}&aqi=no&alerts=no`;
+const cities = require('../CITIES.json');
 
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error('Could not fetch the data for that resource');
-    }
-    const data = await response.json();
-    return data;
-  } catch (error: any) {
-    console.error(error);
-    return null;
-  }
-}
-
-export default function ListScreen() {
-  const [data, setData] = useState(CITIES);
-  const [fullData, setFullData] = useState(CITIES);
-  //const [weatherData, setWeatherData] = useState<any>({});
-  const [selectedCity, setSelectedCity] = useState('');
+export default function ListScreen({navigation}: Props) {
+  const [data, setData] = useState(cities);
+  const [cityToAdd, setCityToAdd] = useState('');
+  const [cityToDelete, setCityToDelete] = useState('');
   const [weatherList, setWeatherList] = useState<Weather[]>([]);
   const [filterText, setFilterText] = useState('');
-  //const [isFound, setIsFound] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [forecastDaysCount, setForecastDaysCount] = useState(1);
+  const [toStore, setToStore] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  // const api = 'https://api.openweathermap.org/data/2.5/weather?q=';
-  const apiKey = '16f82f59dec74ab3be8140412241809';
+  const {
+    data: weathersToAdd,
+    isLoading,
+    error,
+  } = useFetchWeather(cityToAdd, forecastDaysCount);
+
+  useEffect(() => {
+    // AsyncStorage.clear();
+    loadCities();
+  }, []);
+
+  useEffect(() => {
+    if (weathersToAdd) {
+      setWeatherList(prev => [...prev, ...weathersToAdd]);
+      toStore ? storeCity(weathersToAdd[0].city) : null;
+      setFilterText('');
+    }
+  }, [weathersToAdd]);
+
+  const loadCities = async () => {
+    try {
+      const storedCities = await AsyncStorage.getItem('cityList');
+      if (storedCities != null) {
+        const cities = JSON.parse(storedCities);
+
+        setCityToAdd(cities);
+        setToStore(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const storeCity = async (city: string) => {
+    try {
+      let cities: string[] = [];
+      const storedCities = await AsyncStorage.getItem('cityList');
+      storedCities ? (cities = JSON.parse(storedCities)) : null;
+
+      cities.push(city);
+      const jsonValue = JSON.stringify(cities);
+      await AsyncStorage.setItem('cityList', jsonValue);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteCity = async (cityToDelete: string) => {
+    try {
+      let cities: string[] = [];
+      const storedCities = await AsyncStorage.getItem('cityList');
+      storedCities ? (cities = JSON.parse(storedCities)) : null;
+      const updatedCities = cities.filter(city => city !== cityToDelete);
+      const updatedWeatherList = weatherList.filter(
+        weather => weather.city !== cityToDelete,
+      );
+
+      setWeatherList(updatedWeatherList);
+
+      const jsonValue = JSON.stringify(updatedCities);
+      await AsyncStorage.setItem('cityList', jsonValue);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   function isCityInList(city: string, arr: Weather[]) {
     return arr.some(obj => Object.values(obj).includes(city));
   }
 
-  function addToList(weatherData: any) {
-    try {
-      // const newWeather: Weather = {
-      //   city: weatherData.name,
-      //   description: weatherData.weather[0].description,
-      //   temp: weatherData.main.temp,
-      //   feels_like: weatherData.main.feels_like,
-      //   temp_min: weatherData.main.temp_min,
-      //   temp_max: weatherData.main.temp_max,
-      //   pressure: weatherData.main.pessure,
-      //   humidity: weatherData.main.humidity,
-      //   visibility: weatherData.visibility,
-      //   sunrise: weatherData.sys.sunrise,
-      //   sunset: weatherData.sys.sunset,
-      // };
-
-      const newWeather = createWeather(weatherData, false);
-
-      setWeatherList(prev => [...prev, newWeather]);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async function handleSelect(city: string) {
-    try {
-      const isCityPresent = isCityInList(city, weatherList);
-
-      if (!isCityPresent) {
-        const weatherData = await fetchWeather(apiKey, city, 1);
-
-        addToList(weatherData);
-        // sconsole.log(weatherData,  selectedCity, city);
-      }
-    } catch (error) {
-      console.error('Failed to add the city', error);
-    }
-  }
-
-  function handleOpenDetails() {
-    setIsOpen(true);
-  }
-
-  function handleCloseDetails() {
-    setIsOpen(false);
-  }
-
-  function handleItemPress(city: string) {
-    setSelectedCity(city);
+  function handleSelect(city: string) {
+    const cityInList = isCityInList(city, weatherList);
+    !cityInList
+      ? (setCityToAdd(city), setToStore(true), setForecastDaysCount(1))
+      : null;
   }
 
   function handleFilterTextChange(filterText: string) {
     setFilterText(filterText);
-    const filteredData = fullData.filter(city =>
+    const filteredData = cities.filter(city =>
       city.name.toLowerCase().startsWith(filterText.toLowerCase()),
     );
     setData(filteredData);
   }
 
-  if (isOpen) {
-    return (
-      <View>
-        <DetailScreen onPress={handleCloseDetails} city={selectedCity} />
-      </View>
-    );
-  } else {
-    // console.log(isOpen, 0, selectedCity);
-    return (
-      <View>
-        <Text>Weather</Text>
+  return (
+    //  <SafeAreaView>
+    <View style={{flex: 1}}>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        // onRequestClose={() => { // seems to be necessary only for android
+        //   // Alert.alert('Modal has been closed.');
+        //   setModalVisible(!modalVisible);
+        // }}
+        >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              Do you want to delete {cityToDelete}?
+            </Text>
 
-        <SearchBar
-          filterText={filterText}
-          handleFilterTextChange={handleFilterTextChange}
-          data={data}
-          onPress={handleSelect}
-        />
+            <View style={styles.buttonContainer}>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>Cancel</Text>
+              </Pressable>
 
-        <FlatList
-          data={weatherList}
-          renderItem={({item}) => (
-            <ListItem
-              item={item}
-              onItemSelect={handleItemPress}
-              onPress={handleOpenDetails}
+              <Pressable
+                style={[styles.button, styles.buttonDelete]}
+                onPress={() => {
+                  setModalVisible(!modalVisible), deleteCity(cityToDelete);
+                }}>
+                <Text style={styles.textStyle}>Delete</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Header title="Weather" />
+
+      <SearchBar
+        filterText={filterText}
+        handleFilterTextChange={handleFilterTextChange}
+      />
+
+      <View style={{flex: 1}}>
+        {isLoading ? (
+          <View style={styles.loading}>
+            <ActivityIndicator size="large" />
+          </View>
+        ) : null}
+
+        {filterText ? (
+          <View style={styles.list}>
+            <FlatList
+              data={data}
+              renderItem={({item}) => (
+                <View style={styles.dropText}>
+                  <Text onPress={() => handleSelect(item.name)}>
+                    {item.name}
+                  </Text>
+                </View>
+              )}
             />
-          )}
-        />
+          </View>
+        ) : null}
+
+        <View style={styles.flat}>
+          <FlatList
+            data={weatherList}
+            renderItem={({item}) => (
+              <ListItem
+                style={{
+                  backgroundColor: getWeatherColors(item.description).main,
+                }}
+                item={item}
+                onPress={() =>
+                  navigation.navigate('Details', {city: item.city})
+                }
+                onLongPress={() => {
+                  setModalVisible(true);
+                  setCityToDelete(item.city);
+                }}
+              />
+            )}
+          />
+        </View>
       </View>
-    );
-  }
+    </View>
+    //  </SafeAreaView>
+  );
 }
+
+const styles = StyleSheet.create({
+  loading: {
+    // flex: 1,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    position: 'absolute',
+    zIndex: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    // backgroundColor: 'rgba(52, 52, 52, 0.8)',
+    // borderWidth: 1,
+  },
+
+  list: {
+    position: 'absolute',
+    zIndex: 2,
+    backgroundColor: 'rgb(243, 243, 243)',
+    flex: 1,
+    width: '100%',
+  },
+
+  flat: {
+    position: 'relative',
+    zIndex: 1,
+    flex: 1,
+  },
+
+  dropText: {
+    paddingLeft: 15,
+    marginTop: 5,
+    marginBottom: 10,
+  },
+
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    alignItems: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+  },
+  button: {
+    flex: 1,
+    borderRadius: 10,
+    paddingVertical: 10,
+    marginHorizontal: 5,
+  },
+  buttonClose: {
+    backgroundColor: '#ccc',
+  },
+  buttonDelete: {
+    backgroundColor: '#ff4444',
+  },
+  textStyle: {
+    color: 'white',
+    textAlign: 'center',
+  },
+});

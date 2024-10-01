@@ -1,94 +1,115 @@
-import React, {useEffect, useState} from 'react';
+import React, {useRef} from 'react';
 import {
   PermissionsAndroid,
   Platform,
   View,
   Text,
-  Pressable,
-  Button,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  Animated,
 } from 'react-native';
+import {RouteProp} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {getWeatherColors} from '../utils';
+import useFetchWeather from '../hooks/useFetchWeather';
+// import WeatherColorsContext from '../hooks/WeatherColorsContext';
+import {RootStackParamList} from '../App';
+import CurrentInfo from '../components/Details/CurrentInfo';
+import HourlyForecast from '../components/Details/HourlyForecast';
+import DailyForecast from '../components/Details/DailyForecast';
+import GeneralInfo from '../components/Details/GeneralInfo';
+import {WeatherColorsProvider} from '../contexts/WeatherColorsContext';
 
-import {fetchWeather} from './ListScreen';
-import {Weather} from '../models/Weather';
-import createWeather from '../models/Weather';
-
+type DetailScreenRouteProp = RouteProp<RootStackParamList>;
 interface DetailScreenProps {
-  city: string;
-  onPress: () => void;
+  route: DetailScreenRouteProp;
+  // navigation: NativeStackNavigationProp<RootStackParamList, 'Details'>;
 }
 
-export default function DetailScreen({city, onPress}: DetailScreenProps) {
+export default function DetailScreen({route}: DetailScreenProps) {
+  const {city} = route.params!;
 
-  const apiKey = '16f82f59dec74ab3be8140412241809';
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const minHeight = 80;
+  const maxHeight = 280;
+  const scrollDistance = maxHeight - minHeight;
 
-  const [weather, setWeather] = useState<Weather>();
+  const translateContent = scrollY.interpolate({
+    inputRange: [0, scrollDistance],
+    outputRange: [0, scrollDistance],
+    extrapolate: 'clamp',
+  });
 
-  //console.log(city);
+  const {data: weatherList, isLoading, error} = useFetchWeather(city, 10);
+  const weather = weatherList ? weatherList[0] : null;
 
-  useEffect(() => {
-    (async () => {
-      // console.log('hi1');
-      const weatherData = await fetchWeather(apiKey, city, 10);
-      //console.log('hi2', weatherData);
+  if (error) {
+    console.error(error);
+    return <Text>Could not fetch data</Text>;
+  }
 
-      const newWeather = createWeather(weatherData, true);
-      console.log('hi3', newWeather);
+  if (isLoading) {
+    return (
+      <View style={{flex: 1, justifyContent: 'center'}}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
-      setWeather(newWeather);
-      //console.log('hi4', weather);
-    })();
-  }, []);
+  if (weather) {
+    const weatherColors = getWeatherColors(weather.description);
 
-  // const weatherData = fetchWeather(apiKey, city, 10)
-  // const newWeather = createWeather(weatherData, true)
-
-  // setWeather(newWeather)
-
-  // useEffect(() => {
-  //   const weatherGeneral = fetchWeather(api, apiKey, city)
-  //   const weatherHourly = fetchWeather(apiHourly, apiKey, city)
-  //   const weatherDaily = fetchWeather(apiDaily, apiKey, city, "10")
-
-  //   const newWeather = createWeather(weatherGeneral, weatherHourly, weatherDaily)
-
-  //   setWeather(newWeather)
-
-  // }, [])
-
-  return (
-    <View>
-      <Text>DetailScreen </Text>
-
-      <CurrentInfo weather={weather} />
-
-      <HourlyForecast />
-
-      <DailyForecast />
-      <Text>{city}</Text>
-
-      <GeneralInfo />
-
-      <Button onPress={onPress} title="Back" />
-    </View>
-  );
+    return (
+      <WeatherColorsProvider value={weatherColors}>
+        <View
+          style={[
+            styles.screenContainer,
+            {backgroundColor: weatherColors.main},
+          ]}>
+          <CurrentInfo
+            weather={weather}
+            value={scrollY}
+            maxHeight={maxHeight}
+            minHeight={minHeight}
+            scrollDistance={scrollDistance}
+          />
+          <Animated.ScrollView
+            scrollEventThrottle={5}
+            showsVerticalScrollIndicator={false}
+            onScroll={Animated.event(
+              [{nativeEvent: {contentOffset: {y: scrollY}}}],
+              {useNativeDriver: false},
+            )}>
+            <Animated.View
+              style={{
+                ...styles.scrollWrapper,
+                transform: [{translateY: translateContent}],
+              }}>
+              <HourlyForecast forecast={weather.hourlyForecast} />
+              <DailyForecast forecast={weather.dailyForecast} />
+              <GeneralInfo weather={weather} />
+            </Animated.View>
+          </Animated.ScrollView>
+        </View>
+      </WeatherColorsProvider>
+    );
+  } else {
+    return (
+      <View>
+        <Text>Add more weather details</Text>
+      </View>
+    );
+  }
 }
 
-function CurrentInfo(weather: Weather) {
-  return (
-    <View>
-      <Text> KK</Text>
-    </View>
-  );
-}
-
-function HourlyForecast() {
-  return <View></View>;
-}
-
-function DailyForecast() {
-  return <View></View>;
-}
-
-function GeneralInfo() {
-  return <View></View>;
-}
+const styles = StyleSheet.create({
+  screenContainer: {
+    // flex: 1,
+  },
+  scrollWrapper: {
+    // flex: 0.7,
+    padding: 15,
+    paddingBottom: 300,
+  },
+});
