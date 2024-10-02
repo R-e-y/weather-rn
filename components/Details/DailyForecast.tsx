@@ -10,7 +10,7 @@ export default function DailyForecast({forecast}: ForecastProps) {
     return (
       <DetailWrapper
         style={[styles.wrapper, {backgroundColor: minor}]}
-        title={'10-DAY FORECAST'}>
+        title={`${forecast.length}-DAY FORECAST`}>
         <FlatList
           scrollEnabled={false}
           data={forecast}
