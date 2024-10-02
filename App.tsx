@@ -1,7 +1,8 @@
-import React from 'react';
-import {SafeAreaView, StatusBar, useColorScheme} from 'react-native';
+import React, { useEffect } from 'react';
+import {PermissionsAndroid, SafeAreaView, StatusBar, useColorScheme} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import messaging from '@react-native-firebase/messaging';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import ListScreen from './screens/ListScreen';
 import DetailScreen from './screens/DetailScreen';
@@ -20,6 +21,25 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
+
+  useEffect(()=>{
+    const requestUserPermission = async () => {
+      PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+     const authStatus = await messaging().requestPermission();
+     const enabled =
+       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+     if (enabled) {
+       console.log('Authorization status:', authStatus);
+       const token = await messaging().getToken();
+       console.log('FCM token:', token);
+     }
+   };
+
+   requestUserPermission();
+   },[])
+
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
