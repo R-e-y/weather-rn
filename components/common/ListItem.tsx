@@ -8,8 +8,8 @@ import {
   Pressable,
 } from 'react-native';
 
-import {Weather} from '../types/Weather';
-import RadiusWrapper from './Details/DetailWrapper';
+import {Weather} from '../../types/Weather';
+import RadiusWrapper from '../Details/DetailWrapper';
 
 interface ListItemProps {
   style: StyleProp<ViewStyle>;

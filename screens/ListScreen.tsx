@@ -12,10 +12,10 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import ListItem from '../components/ListItem';
-import SearchBar from '../components/SearchBar';
+import ListItem from '../components/common/ListItem';
+import SearchBar from '../components/common/SearchBar';
 import {Weather} from '../types/Weather';
-import Header from '../components/Header';
+import Header from '../components/common/Header';
 import useFetchWeather from '../hooks/useFetchWeather';
 import {getWeatherColors} from '../utils';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
