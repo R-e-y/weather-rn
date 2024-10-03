@@ -19,7 +19,8 @@ import Header from '../components/common/Header';
 import useFetchWeather from '../hooks/useFetchWeather';
 import {getWeatherColors} from '../utils';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../App';
+import { RootStackParamList } from '../navigation/AppNavigator';
+import { CITIES, City } from '../constants';
 
 type DetailScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -33,10 +34,9 @@ type Props = {
   navigation: DetailScreenNavigationProp;
 };
 
-const cities = require('../CITIES.json');
 
 export default function ListScreen({navigation}: Props) {
-  const [data, setData] = useState(cities);
+  const [data, setData] = useState(CITIES);
   const [cityToAdd, setCityToAdd] = useState('');
   const [cityToDelete, setCityToDelete] = useState('');
   const [weatherList, setWeatherList] = useState<Weather[]>([]);
@@ -124,7 +124,7 @@ export default function ListScreen({navigation}: Props) {
 
   function handleFilterTextChange(filterText: string) {
     setFilterText(filterText);
-    const filteredData = cities.filter(city =>
+    const filteredData = CITIES.filter((city: City) =>
       city.name.toLowerCase().startsWith(filterText.toLowerCase()),
     );
     setData(filteredData);

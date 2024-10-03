@@ -10,16 +10,15 @@ import {
   Animated,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {getWeatherColors} from '../utils';
 import useFetchWeather from '../hooks/useFetchWeather';
-// import WeatherColorsContext from '../hooks/WeatherColorsContext';
-import {RootStackParamList} from '../App';
+
 import CurrentInfo from '../components/Details/CurrentInfo';
 import HourlyForecast from '../components/Details/HourlyForecast';
 import DailyForecast from '../components/Details/DailyForecast';
 import GeneralInfo from '../components/Details/GeneralInfo';
 import {WeatherColorsProvider} from '../contexts/WeatherColorsContext';
+import { RootStackParamList } from '../navigation/AppNavigator';
 
 type DetailScreenRouteProp = RouteProp<RootStackParamList>;
 interface DetailScreenProps {
