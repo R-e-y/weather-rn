@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 import {Weather} from '../../types/Weather';
-import RadiusWrapper from '../Details/DetailWrapper';
+import RadiusWrapper from '../details/DetailWrapper';
 
 interface ListItemProps {
   style: StyleProp<ViewStyle>;

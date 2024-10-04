@@ -13,17 +13,16 @@ import {RouteProp} from '@react-navigation/native';
 import {getWeatherColors} from '../utils';
 import useFetchWeather from '../hooks/useFetchWeather';
 
-import CurrentInfo from '../components/Details/CurrentInfo';
-import HourlyForecast from '../components/Details/HourlyForecast';
-import DailyForecast from '../components/Details/DailyForecast';
-import GeneralInfo from '../components/Details/GeneralInfo';
+import CurrentInfo from '../components/details/CurrentInfo';
+import HourlyForecast from '../components/details/HourlyForecast';
+import DailyForecast from '../components/details/DailyForecast';
+import GeneralInfo from '../components/details/GeneralInfo';
 import {WeatherColorsProvider} from '../contexts/WeatherColorsContext';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { DetailScreenRouteProp } from '../types/Navigation';
 
-type DetailScreenRouteProp = RouteProp<RootStackParamList>;
+
 interface DetailScreenProps {
   route: DetailScreenRouteProp;
-  // navigation: NativeStackNavigationProp<RootStackParamList, 'Details'>;
 }
 
 export default function DetailScreen({route}: DetailScreenProps) {

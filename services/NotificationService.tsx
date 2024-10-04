@@ -16,8 +16,6 @@ export default function NotificationService() {
     setModalVisible(false);
   }
 
-  console.log('ggggggGGGOOO', notification);
-
   return (
     notification && (
       <NotificationModal

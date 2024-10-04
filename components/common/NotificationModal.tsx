@@ -1,53 +1,30 @@
-import React, {useState} from 'react';
+import React from 'react';
 
 import {StyleSheet, Modal, View, Text, Pressable, Button} from 'react-native';
 import {Notification} from '../../types/Notification';
 
-
-interface NotificationModalProps{
-  notification: Notification
-  modalVisible: boolean,
-  onClose: ()=> void,
+interface NotificationModalProps {
+  notification: Notification;
+  modalVisible: boolean;
+  onClose: () => void;
 }
 
-export default function NotificationModal({notification, ...props}: NotificationModalProps) {
-  
-  console.log('HI FROM NotificationModal', props.modalVisible);
+export default function NotificationModal({
+  notification,
+  ...props
+}: NotificationModalProps) {
   return (
     <Modal
       animationType="fade"
       transparent={true}
       visible={props.modalVisible}
-      // onRequestClose={() => { // seems to be necessary only for android
-      //   // Alert.alert('Modal has been closed.');
-      //   setModalVisible(!modalVisible);
-      // }}
-    >
+      onRequestClose={props.onClose}>
       {/* <View style={styles.centeredView}> */}
-        <View style={styles.modalView}>
-          <Text style={styles.modalText}>{notification.title}</Text>
-          <Text style={styles.modalText}>{notification.body}</Text>
-
-          
-
-          <Button onPress={props.onClose} title='Cancel' />
-
-          {/* <View style={styles.buttonContainer}>
-                  <Pressable
-                    style={[styles.button, styles.buttonClose]}
-                    onPress={() => setModalVisible(!modalVisible)}>
-                    <Text style={styles.textStyle}>Cancel</Text>
-                  </Pressable>
-    
-                  <Pressable
-                    style={[styles.button, styles.buttonDelete]}
-                    onPress={() => {
-                      setModalVisible(!modalVisible), deleteCity(cityToDelete);
-                    }}>
-                    <Text style={styles.textStyle}>Delete</Text>
-                  </Pressable>
-                </View> */}
-        </View>
+      <View style={styles.modalView}>
+        <Text style={styles.modalText}>{notification.title}</Text>
+        <Text style={styles.modalText}>{notification.body}</Text>
+        <Button onPress={props.onClose} title="Cancel" />
+      </View>
       {/* </View> */}
     </Modal>
   );

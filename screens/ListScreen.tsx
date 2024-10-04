@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   SafeAreaView,
   Modal,
-  Alert,
   Pressable,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -18,22 +17,13 @@ import {Weather} from '../types/Weather';
 import Header from '../components/common/Header';
 import useFetchWeather from '../hooks/useFetchWeather';
 import {getWeatherColors} from '../utils';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
-import { CITIES, City } from '../constants';
+import {CITIES, City} from '../constants';
+import {ListScreenNavigationProp} from '../types/Navigation';
+import ConfirmationModal from '../components/common/ConfirmationModal';
 
-type DetailScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Home'
-  //refers to a specific route name defined in your RootStackParamList type.
-  //It's telling TypeScript that the navigation prop (DetailScreenNavigationProp)
-  //is typed specifically for the 'Home' screen in your navigation stack.
->;
-
-type Props = {
-  navigation: DetailScreenNavigationProp;
-};
-
+interface Props {
+  navigation: ListScreenNavigationProp;
+}
 
 export default function ListScreen({navigation}: Props) {
   const [data, setData] = useState(CITIES);
@@ -130,43 +120,25 @@ export default function ListScreen({navigation}: Props) {
     setData(filteredData);
   }
 
+  function handleModalClose(){
+    setModalVisible(!modalVisible)
+  }
+
+  function handleDeleteCity(){
+    setModalVisible(!modalVisible),
+    deleteCity(cityToDelete)
+  }
+
   return (
     //  <SafeAreaView>
     <View style={{flex: 1}}>
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        // onRequestClose={() => { // seems to be necessary only for android
-        //   // Alert.alert('Modal has been closed.');
-        //   setModalVisible(!modalVisible);
-        // }}
-        >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>
-              Do you want to delete {cityToDelete}?
-            </Text>
-
-            <View style={styles.buttonContainer}>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={styles.textStyle}>Cancel</Text>
-              </Pressable>
-
-              <Pressable
-                style={[styles.button, styles.buttonDelete]}
-                onPress={() => {
-                  setModalVisible(!modalVisible), deleteCity(cityToDelete);
-                }}>
-                <Text style={styles.textStyle}>Delete</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
+      <ConfirmationModal
+        modalVisible={modalVisible}
+        title={`Do you want to delete ${cityToDelete}?`}
+        onCancel = {handleModalClose}
+        onConfirm={handleDeleteCity}
+      />
+  
       <Header title="Weather" />
 
       <SearchBar
@@ -256,55 +228,5 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     marginTop: 5,
     marginBottom: 10,
-  },
-
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalView: {
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 15,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    alignItems: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 10,
-  },
-  button: {
-    flex: 1,
-    borderRadius: 10,
-    paddingVertical: 10,
-    marginHorizontal: 5,
-  },
-  buttonClose: {
-    backgroundColor: '#ccc',
-  },
-  buttonDelete: {
-    backgroundColor: '#ff4444',
-  },
-  textStyle: {
-    color: 'white',
-    textAlign: 'center',
   },
 });

@@ -13,8 +13,17 @@ export const CITIES : City[] = [
     {"name":"Petersburg"},
     {"name":"Belgrade"},
     {"name":"Bern"}
-    
 ]
+
+export const WEEKDAYS = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
 
 export const API_KEY = '16f82f59dec74ab3be8140412241809'
 

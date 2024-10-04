@@ -59,21 +59,10 @@ export function createWeather(weatherData: any, hasForecast: boolean): Weather {
 }
 
 export function getWeekday(datetime: string) {
-  const weekdays = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
-
   if (datetime !== 'Today') {
     const date = new Date(datetime);
-    return weekdays[date.getDay()];
+    return WEEKDAYS[date.getDay()];
   }
-
   return datetime;
 }
 
@@ -168,7 +157,7 @@ function convertTime12to24(time12h: string) {
 }
 
 import {WeatherColors} from './contexts/WeatherColorsContext';
-import { WEATHER_COLORS } from './constants';
+import { WEATHER_COLORS, WEEKDAYS } from './constants';
 export function getWeatherColors(description: string): WeatherColors {
 
   const color = WEATHER_COLORS.find(
