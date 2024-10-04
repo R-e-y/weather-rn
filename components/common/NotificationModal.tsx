@@ -21,8 +21,12 @@ export default function NotificationModal({
       onRequestClose={props.onClose}>
       {/* <View style={styles.centeredView}> */}
       <View style={styles.modalView}>
-        <Text style={styles.modalText}>{notification.title}</Text>
-        <Text style={styles.modalText}>{notification.body}</Text>
+
+  
+          <Text style={styles.modalTitle}>{notification.title}</Text>
+          
+
+        <Text style={styles.modalBody}>{notification.body}</Text>
         <Button onPress={props.onClose} title="Cancel" />
       </View>
       {/* </View> */}
@@ -51,16 +55,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
+  modalTitle: {
+    marginBottom: 10,
     fontSize: 16,
     fontWeight: '500',
   },
-  textStyle: {
-    color: 'white',
-    textAlign: 'center',
+
+  modalBody: {
+    marginBottom: 10,
+    fontSize: 16,
+    fontWeight: '400',
   },
+
 });
