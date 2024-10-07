@@ -17,12 +17,13 @@ export default function NotificationService() {
   }
 
   return (
-    notification && (
+    notification ? (
       <NotificationModal
         notification={notification}
         modalVisible={modalVisible}
         onClose={handleCloseModal}
       />
     )
+    : null
   );
 }

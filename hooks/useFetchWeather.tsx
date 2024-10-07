@@ -5,13 +5,13 @@ import { API_KEY } from '../constants';
 
 const useFetchWeather = (city: string[] | string, days: number) => {
   const [data, setData] = useState<Weather[]>();
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   let hasForecast = false;
 
   useEffect(() => {
     const fetchWeather = async () => {
-      setIsLoading(true);
+      setLoading(true);
       try {
         const cities = Array.isArray(city) ? city : [city];
         const weatherList: Weather[] = [];
@@ -33,14 +33,14 @@ const useFetchWeather = (city: string[] | string, days: number) => {
       } catch (err: any) {
         setError(err.message);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
     fetchWeather();
   }, [city, days]);
 
-  return {data, isLoading, error};
+  return {data, loading, error};
 };
 
 export default useFetchWeather;

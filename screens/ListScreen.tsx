@@ -27,17 +27,19 @@ interface Props {
 
 export default function ListScreen({navigation}: Props) {
   const [data, setData] = useState(CITIES);
-  const [cityToAdd, setCityToAdd] = useState('');
+  const [cityToAdd, setCityToAdd] = useState<string[] | string>('');
   const [cityToDelete, setCityToDelete] = useState('');
   const [weatherList, setWeatherList] = useState<Weather[]>([]);
   const [filterText, setFilterText] = useState('');
-  const [forecastDaysCount, setForecastDaysCount] = useState(1);
   const [toStore, setToStore] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [refreshing, setRefresing] = useState(false)
+
+  const forecastDaysCount = 1
 
   const {
     data: weathersToAdd,
-    isLoading,
+    loading,
     error,
   } = useFetchWeather(cityToAdd, forecastDaysCount);
 
@@ -48,9 +50,15 @@ export default function ListScreen({navigation}: Props) {
 
   useEffect(() => {
     if (weathersToAdd) {
-      setWeatherList(prev => [...prev, ...weathersToAdd]);
-      toStore ? storeCity(weathersToAdd[0].city) : null;
-      setFilterText('');
+      if (toStore) {
+        storeCity(weathersToAdd[0].city)
+        setWeatherList(prev => [...prev, ...weathersToAdd]);
+        setFilterText('');
+      }
+      else{
+        setWeatherList(weathersToAdd)
+      }
+      
     }
   }, [weathersToAdd]);
 
@@ -108,7 +116,7 @@ export default function ListScreen({navigation}: Props) {
   function handleSelect(city: string) {
     const cityInList = isCityInList(city, weatherList);
     !cityInList
-      ? (setCityToAdd(city), setToStore(true), setForecastDaysCount(1))
+      ? (setCityToAdd(city), setToStore(true), forecastDaysCount)
       : null;
   }
 
@@ -129,6 +137,12 @@ export default function ListScreen({navigation}: Props) {
     deleteCity(cityToDelete)
   }
 
+  function handleRefresh() {
+    setRefresing(true)
+    loadCities()
+    setRefresing(false)
+  }
+
   return (
     //  <SafeAreaView>
     <View style={{flex: 1}}>
@@ -147,18 +161,19 @@ export default function ListScreen({navigation}: Props) {
       />
 
       <View style={{flex: 1}}>
-        {isLoading ? (
+        {loading ? (
           <View style={styles.loading}>
             <ActivityIndicator size="large" />
           </View>
         ) : null}
 
         {filterText ? (
-          <View style={styles.list}>
+          <View style={styles.filteredList}>
             <FlatList
               data={data}
+              keyboardShouldPersistTaps='always'
               renderItem={({item}) => (
-                <View style={styles.dropText}>
+                <View style={styles.filteredText}>
                   <Text onPress={() => handleSelect(item.name)}>
                     {item.name}
                   </Text>
@@ -168,9 +183,12 @@ export default function ListScreen({navigation}: Props) {
           </View>
         ) : null}
 
-        <View style={styles.flat}>
+        <View style={styles.mainList}>
           <FlatList
             data={weatherList}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            keyboardShouldPersistTaps='always'
             renderItem={({item}) => (
               <ListItem
                 style={{
@@ -210,7 +228,7 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
   },
 
-  list: {
+  filteredList: {
     position: 'absolute',
     zIndex: 2,
     backgroundColor: 'rgb(243, 243, 243)',
@@ -218,13 +236,13 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 
-  flat: {
+  mainList: {
     position: 'relative',
     zIndex: 1,
     flex: 1,
   },
 
-  dropText: {
+  filteredText: {
     paddingLeft: 15,
     marginTop: 5,
     marginBottom: 10,

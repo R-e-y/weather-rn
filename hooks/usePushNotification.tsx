@@ -15,8 +15,6 @@ export default function usePushNotification() {
           body:
             remoteMessage.notification.body || 'You have a new notification.',
         });
-
-      console.log(JSON.stringify(remoteMessage), 'ooooooooo');
     });
 
     return unsubscribe;

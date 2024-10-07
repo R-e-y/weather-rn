@@ -9,7 +9,6 @@ import {
   ActivityIndicator,
   Animated,
 } from 'react-native';
-import {RouteProp} from '@react-navigation/native';
 import {getWeatherColors} from '../utils';
 import useFetchWeather from '../hooks/useFetchWeather';
 
@@ -39,7 +38,9 @@ export default function DetailScreen({route}: DetailScreenProps) {
     extrapolate: 'clamp',
   });
 
-  const {data: weatherList, isLoading, error} = useFetchWeather(city, 10);
+  const forecastDaysCount = 3
+
+  const {data: weatherList, loading, error} = useFetchWeather(city, forecastDaysCount);
   const weather = weatherList ? weatherList[0] : null;
 
   if (error) {
@@ -47,7 +48,7 @@ export default function DetailScreen({route}: DetailScreenProps) {
     return <Text>Could not fetch data</Text>;
   }
 
-  if (isLoading) {
+  if (loading) {
     return (
       <View style={{flex: 1, justifyContent: 'center'}}>
         <ActivityIndicator size="large" />
