@@ -1,13 +1,10 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   FlatList,
   View,
   Text,
   StyleSheet,
   ActivityIndicator,
-  SafeAreaView,
-  Modal,
-  Pressable,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

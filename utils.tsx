@@ -131,8 +131,8 @@ function setTwilight(
 function createTwilight(title: string, time: string) {
   let icon: string | number;
   title === 'Sunrise'
-    ? icon = require('./icons/sunrise.png')
-    : icon = require('./icons/sunset.png')
+    ? icon = require('./assets/sunrise.png')
+    : icon = require('./assets/sunset.png')
 
   const newForecast: Forecast = {
     datetime: time,
