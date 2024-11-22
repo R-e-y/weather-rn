@@ -1,53 +1,42 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   FlatList,
   View,
   Text,
   StyleSheet,
   ActivityIndicator,
-  SafeAreaView,
-  Modal,
-  Alert,
-  Pressable,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import ListItem from '../components/ListItem';
-import SearchBar from '../components/SearchBar';
+import ListItem from '../components/common/ListItem';
+import SearchBar from '../components/common/SearchBar';
 import {Weather} from '../types/Weather';
-import Header from '../components/Header';
+import Header from '../components/common/Header';
 import useFetchWeather from '../hooks/useFetchWeather';
 import {getWeatherColors} from '../utils';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../App';
+import {CITIES, City} from '../constants';
+import {ListScreenNavigationProp} from '../types/Navigation';
+import ConfirmationModal from '../components/common/ConfirmationModal';
 
-type DetailScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Home'
-  //refers to a specific route name defined in your RootStackParamList type.
-  //It's telling TypeScript that the navigation prop (DetailScreenNavigationProp)
-  //is typed specifically for the 'Home' screen in your navigation stack.
->;
-
-type Props = {
-  navigation: DetailScreenNavigationProp;
-};
-
-const cities = require('../CITIES.json');
+interface Props {
+  navigation: ListScreenNavigationProp;
+}
 
 export default function ListScreen({navigation}: Props) {
-  const [data, setData] = useState(cities);
-  const [cityToAdd, setCityToAdd] = useState('');
+  const [data, setData] = useState(CITIES);
+  const [cityToAdd, setCityToAdd] = useState<string[] | string>('');
   const [cityToDelete, setCityToDelete] = useState('');
   const [weatherList, setWeatherList] = useState<Weather[]>([]);
   const [filterText, setFilterText] = useState('');
-  const [forecastDaysCount, setForecastDaysCount] = useState(1);
   const [toStore, setToStore] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [refreshing, setRefresing] = useState(false)
+
+  const forecastDaysCount = 1
 
   const {
     data: weathersToAdd,
-    isLoading,
+    loading,
     error,
   } = useFetchWeather(cityToAdd, forecastDaysCount);
 
@@ -58,9 +47,15 @@ export default function ListScreen({navigation}: Props) {
 
   useEffect(() => {
     if (weathersToAdd) {
-      setWeatherList(prev => [...prev, ...weathersToAdd]);
-      toStore ? storeCity(weathersToAdd[0].city) : null;
-      setFilterText('');
+      if (toStore) {
+        storeCity(weathersToAdd[0].city)
+        setWeatherList(prev => [...prev, ...weathersToAdd]);
+        setFilterText('');
+      }
+      else{
+        setWeatherList(weathersToAdd)
+      }
+      
     }
   }, [weathersToAdd]);
 
@@ -118,55 +113,43 @@ export default function ListScreen({navigation}: Props) {
   function handleSelect(city: string) {
     const cityInList = isCityInList(city, weatherList);
     !cityInList
-      ? (setCityToAdd(city), setToStore(true), setForecastDaysCount(1))
+      ? (setCityToAdd(city), setToStore(true), forecastDaysCount)
       : null;
   }
 
   function handleFilterTextChange(filterText: string) {
     setFilterText(filterText);
-    const filteredData = cities.filter(city =>
+    const filteredData = CITIES.filter((city: City) =>
       city.name.toLowerCase().startsWith(filterText.toLowerCase()),
     );
     setData(filteredData);
   }
 
+  function handleModalClose(){
+    setModalVisible(!modalVisible)
+  }
+
+  function handleDeleteCity(){
+    setModalVisible(!modalVisible),
+    deleteCity(cityToDelete)
+  }
+
+  function handleRefresh() {
+    setRefresing(true)
+    loadCities()
+    setRefresing(false)
+  }
+
   return (
     //  <SafeAreaView>
     <View style={{flex: 1}}>
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        // onRequestClose={() => { // seems to be necessary only for android
-        //   // Alert.alert('Modal has been closed.');
-        //   setModalVisible(!modalVisible);
-        // }}
-        >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>
-              Do you want to delete {cityToDelete}?
-            </Text>
-
-            <View style={styles.buttonContainer}>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={styles.textStyle}>Cancel</Text>
-              </Pressable>
-
-              <Pressable
-                style={[styles.button, styles.buttonDelete]}
-                onPress={() => {
-                  setModalVisible(!modalVisible), deleteCity(cityToDelete);
-                }}>
-                <Text style={styles.textStyle}>Delete</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
+      <ConfirmationModal
+        modalVisible={modalVisible}
+        title={`Do you want to delete ${cityToDelete}?`}
+        onCancel = {handleModalClose}
+        onConfirm={handleDeleteCity}
+      />
+  
       <Header title="Weather" />
 
       <SearchBar
@@ -175,18 +158,19 @@ export default function ListScreen({navigation}: Props) {
       />
 
       <View style={{flex: 1}}>
-        {isLoading ? (
+        {loading ? (
           <View style={styles.loading}>
             <ActivityIndicator size="large" />
           </View>
         ) : null}
 
         {filterText ? (
-          <View style={styles.list}>
+          <View style={styles.filteredList}>
             <FlatList
               data={data}
+              keyboardShouldPersistTaps='always'
               renderItem={({item}) => (
-                <View style={styles.dropText}>
+                <View style={styles.filteredText}>
                   <Text onPress={() => handleSelect(item.name)}>
                     {item.name}
                   </Text>
@@ -196,9 +180,12 @@ export default function ListScreen({navigation}: Props) {
           </View>
         ) : null}
 
-        <View style={styles.flat}>
+        <View style={styles.mainList}>
           <FlatList
             data={weatherList}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            keyboardShouldPersistTaps='always'
             renderItem={({item}) => (
               <ListItem
                 style={{
@@ -238,7 +225,7 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
   },
 
-  list: {
+  filteredList: {
     position: 'absolute',
     zIndex: 2,
     backgroundColor: 'rgb(243, 243, 243)',
@@ -246,65 +233,15 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 
-  flat: {
+  mainList: {
     position: 'relative',
     zIndex: 1,
     flex: 1,
   },
 
-  dropText: {
+  filteredText: {
     paddingLeft: 15,
     marginTop: 5,
     marginBottom: 10,
-  },
-
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalView: {
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 15,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    alignItems: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 10,
-  },
-  button: {
-    flex: 1,
-    borderRadius: 10,
-    paddingVertical: 10,
-    marginHorizontal: 5,
-  },
-  buttonClose: {
-    backgroundColor: '#ccc',
-  },
-  buttonDelete: {
-    backgroundColor: '#ff4444',
-  },
-  textStyle: {
-    color: 'white',
-    textAlign: 'center',
   },
 });

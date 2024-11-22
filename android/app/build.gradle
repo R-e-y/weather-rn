@@ -1,5 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
+apply plugin: "com.google.gms.google-services"
 
 import com.android.build.OutputFile
 
@@ -166,7 +167,13 @@ dependencies {
         implementation jscFlavor
     }
 
-    implementation project(':react-native-contacts')
+    // implementation project(':react-native-contacts')
+
+    // Import the Firebase BoM
+    implementation platform('com.google.firebase:firebase-bom:33.3.0')
+
+    // Add Firebase dependencies
+    implementation 'com.google.firebase:firebase-analytics'
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
